@@ -94,10 +94,10 @@
     </div>
  
     <div class="user-strip">
-      <div class="avatar" id="user-avatar">HE</div>
+      <div class="avatar" id="user-avatar"></div>
       <div>
-        <div class="user-name" id="user-name-display">Heidi Ellis</div>
-        <div class="user-plan">Free plan</div>
+        <div class="user-name" id="user-name-display">Hello, User
+        </div>
       </div>
     </div>
   </aside>
@@ -179,5 +179,40 @@
           <div class="tab" onclick="switchExpTab(this,'summary')">Summary</div>
         </div>
 
+        <!-- Transactions tab -->
+        <div id="exp-transactions">
+          <div class="expense-form">
+            <div class="form-group">
+              <label>Description</label>
+              <input class="form-input" id="exp-desc" placeholder="e.g. Groceries">
+            </div>
+            <div class="form-group">
+              <label>Amount (R)</label>
+              <input class="form-input" id="exp-amount" type="number" placeholder="0.00">
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select class="form-input" id="exp-cat">
+                <option>Food</option>
+                <option>Transport</option>
+                <option>Utilities</option>
+                <option>Entertainment</option>
+                <option>Health</option>
+                <option>Income</option>
+                <option>Clothing</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <button class="btn-add" onclick="addExpense()">+ Add</button>
+          </div>
+          <div class="card" style="padding:0;overflow:hidden">
+            <table class="expense-table">
+              <thead><tr><th>Date</th><th>Description</th><th>Category</th><th style="text-align:right">Amount</th><th></th></tr></thead>
+              <tbody id="expense-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+`
 </body>
 </html>
