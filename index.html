@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrainFiles</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+
+
+
+
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+ <aside class="sidebar">
+    <div class="brand">
+        <h1>BrainFiles</h1>
+        <p>Organize your thoughts</p>
+    </div>
+
+    <div class="nav-section">
+        <div class="nav-label">Default</div>
+        <div class="nav-item active" data-view="dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+
+         <span class="label">Dashboard</span>
+        </div>
+        <div class="nav-item" data-view="expenses">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+
+         <span class="label">Dashboard</span>
+         </div>
+         <div class="nav-item" data-view="expenses">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"></svg>
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+            <path d="M12 6v12M9 9h4.5a1.5 1.5 0 010 3H10a1.5 1.5 0 000 3H15"/></svg>
+
+         <span class="label">Expenses</span>
+          <span class="nav-badge" id="expense-badge">0</span>
+          </div>
+          <div class="nav-item" data-view="calendar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                <path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+
+            <span class="label">Calendar</span>
+            </div>
+            <div class="nav-item" data-view="tasks">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M9 11l3 3L22 4"/>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                </svg>
+            
+            <span class="label">Tasks</span>
+            <span class="nav-badge" id="task-badge">0</span>
+             </div>
+             <div class="nav-item" data-view="notes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>
+                </svg>
+
+            <span class="label">Notes</span>
+        </div>
+    </div>
+
+    <div class="folder-section">
+      <div class="folder-add-row">
+        <span>My Folders</span>
+        <button class="btn-icon" id="add-folder-btn" title="New folder">+</button>
+      </div>
+      <div id="folder-input" style="display:none" class="folder-input-row">
+        <input type="text" id="new-folder-name" placeholder="Folder name…">
+        <button onclick="createFolder()">Add</button>
+      </div>
+      <div id="custom-folders"></div>
+    </div>
+ 
+    <div class="user-strip">
+      <div class="avatar" id="user-avatar">HE</div>
+      <div>
+        <div class="user-name" id="user-name-display">Heidi Ellis</div>
+        <div class="user-plan">Free plan</div>
+      </div>
+    </div>
+  </aside>
+
+</body>
+</html>
