@@ -126,5 +126,46 @@
     <div class="content">
       <p>Organize your thoughts, tasks, and ideas in one place. Create folders to keep everything tidy and easily accessible.</p>
 
+         <!-- ── DASHBOARD ── -->
+      <div class="view active" id="view-dashboard">
+        <div class="stats-row" id="stats-row"></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Recent expenses</span>
+              <span class="card-sub" id="dash-month"></span>
+            </div>
+            <div id="dash-expenses"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title" id="dash-cal-title"></span>
+            </div>
+            <div class="cal-nav">
+              <button onclick="dashCalPrev()">‹</button>
+              <span id="dash-cal-month"></span>
+              <button onclick="dashCalNext()">›</button>
+            </div>
+            <div class="cal-grid" id="dash-cal-grid"></div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Debt tracker</span></div>
+            <div id="dash-debts"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Tasks today</span></div>
+            <div id="dash-tasks"></div>
+          </div>
+        </div>
+        <div class="grid-full">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Recent note</span></div>
+            <div id="dash-note"></div>
+          </div>
+        </div>
+      </div>
+
 </body>
 </html>
