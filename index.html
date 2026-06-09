@@ -233,6 +233,71 @@
           <div id="debt-list"></div>
         </div>
 
+        <!-- Summary tab -->
+        <div id="exp-summary" style="display:none">
+          <div class="stats-row" id="exp-summary-stats" style="grid-template-columns:repeat(3,1fr)"></div>
+          <div class="card" style="margin-top:14px">
+            <div class="card-header"><span class="card-title">By category</span></div>
+            <div id="exp-cat-breakdown"></div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ── CALENDAR ── -->
+      <div class="view" id="view-calendar">
+        <div class="calendar-full">
+          <div class="cal-full-header">
+            <span class="cal-full-title" id="cal-full-title"></span>
+            <div class="cal-full-nav">
+              <button onclick="calFullPrev()">‹ Prev</button>
+              <button onclick="calFullToday()">Today</button>
+              <button onclick="calFullNext()">Next ›</button>
+            </div>
+          </div>
+          <div class="cal-full-grid" id="cal-full-grid"></div>
+        </div>
+        <div class="event-panel">
+          <div class="card-header" style="margin-bottom:14px">
+            <span class="card-title">Add event</span>
+          </div>
+          <div class="event-form">
+            <div class="form-group">
+              <label>Event title</label>
+              <input class="form-input" id="ev-title" placeholder="e.g. Pay rent">
+            </div>
+            <div class="form-group">
+              <label>Date</label>
+              <input class="form-input" id="ev-date" type="date">
+            </div>
+            <div class="form-group">
+              <label>Type</label>
+              <select class="form-input" id="ev-type">
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="reminder">Reminder</option>
+                <option value="debt">Payment</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Recurrence</label>
+              <select class="form-input" id="ev-recur">
+                <option value="once">Once</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>
+            <button class="btn-add" onclick="addEvent()">+ Add</button>
+          </div>
+        </div>
+        <div class="event-panel" style="margin-top:14px">
+          <div class="card-header" style="margin-bottom:10px"><span class="card-title">Upcoming events</span></div>
+          <div id="upcoming-events"></div>
+        </div>
+      </div>
+
+
 `
 </body>
 </html>
