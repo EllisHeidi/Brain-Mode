@@ -1322,10 +1322,9 @@ function navigate(view, folderId) {
 function updateTopbar(view) {
   const now = new Date();
   const hour = now.getHours();
-  const greet = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
-  const name = data.user.name.split(' ')[0];
+  const greet = hour < 12 ? 'Morning' : hour < 17 ? 'Afternoon' : 'Evening';
   const titles = {
-    dashboard: `Good ${greet}, ${name} 👋`,
+    dashboard: `Good ${greet} 👋`,
     expenses: 'Expenses',
     calendar: 'Calendar',
     tasks: 'Tasks',
