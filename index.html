@@ -297,6 +297,171 @@
         </div>
       </div>
 
+       <!-- ── TASKS ── -->
+      <div class="view" id="view-tasks">
+        <div class="task-filters" id="task-filters">
+          <div class="filter-chip active" data-filter="all">All</div>
+          <div class="filter-chip" data-filter="high">High</div>
+          <div class="filter-chip" data-filter="medium">Medium</div>
+          <div class="filter-chip" data-filter="low">Low</div>
+          <div class="filter-chip" data-filter="done">Done</div>
+        </div>
+        <div class="task-add-row">
+          <div class="form-group">
+            <label>Task</label>
+            <input class="form-input" id="task-input" placeholder="Add a new task…">
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <select class="form-input" id="task-priority">
+              <option value="high">High</option>
+              <option value="medium" selected>Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Due date</label>
+            <input class="form-input" id="task-due" type="date">
+          </div>
+          <button class="btn-add" style="margin-top:18px" onclick="addTask()">+ Add</button>
+        </div>
+        <div id="tasks-list"></div>
+      </div>
+ 
+      <!-- ── NOTES ── -->
+      <div class="view" id="view-notes">
+        <div class="page-header">
+          <span class="page-title">Notes</span>
+          <button class="btn-primary" onclick="newNote()">+ New note</button>
+        </div>
+        <div class="notes-layout">
+          <div class="notes-list" id="notes-list"></div>
+          <div class="note-editor">
+            <input class="note-editor-title" id="note-title" placeholder="Note title…" oninput="saveCurrentNote()">
+            <textarea class="note-editor-body" id="note-body" placeholder="Start writing…" oninput="saveCurrentNote()"></textarea>
+            <div class="note-toolbar">
+              <span style="font-size:11px;color:var(--text-muted);flex:1" id="note-saved-status">Start typing to save</span>
+              <button class="btn-cancel" onclick="deleteCurrentNote()">Delete note</button>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- ── FOLDER VIEW ── -->
+      <div class="view" id="view-folder">
+        <div class="folder-view-header">
+          <div class="folder-icon-big">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          </div>
+          <div>
+            <div class="page-title" id="folder-view-title">Folder</div>
+            <div style="font-size:12px;color:var(--text-muted)">Custom folder</div>
+          </div>
+          <button class="btn-primary" style="margin-left:auto" onclick="newFolderNote()">+ New note</button>
+        </div>
+        <div class="notes-layout">
+          <div class="notes-list" id="folder-notes-list"></div>
+          <div class="note-editor">
+            <input class="note-editor-title" id="folder-note-title" placeholder="Note title…" oninput="saveFolderNote()">
+            <textarea class="note-editor-body" id="folder-note-body" placeholder="Start writing…" oninput="saveFolderNote()"></textarea>
+            <div class="note-toolbar">
+              <span style="font-size:11px;color:var(--text-muted);flex:1" id="folder-note-status">Start typing to save</span>
+              <button class="btn-cancel" onclick="deleteFolderNote()">Delete note</button>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+    </div><!-- .content -->
+  </main>
+</div>
+ 
+<!-- Modal: pay debt -->
+<div class="modal-overlay" id="pay-modal">
+  <div class="modal">
+    <div class="modal-title">Make a payment</div>
+    <div class="modal-field">
+      <label>Payment amount (R)</label>
+      <input class="form-input" id="pay-amount" type="number" placeholder="0.00" style="width:100%">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('pay-modal')">Cancel</button>
+      <button class="btn-primary" onclick="submitPayment()">Pay</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- Modal: event detail -->
+<div class="modal-overlay" id="event-modal">
+  <div class="modal">
+    <div class="modal-title" id="event-modal-title">Event</div>
+    <div id="event-modal-body" style="color:var(--text-secondary);font-size:13px;line-height:1.8"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('event-modal')">Close</button>
+      <button class="btn-primary" style="background:var(--red);hover:var(--red)" onclick="deleteEventModal()">Delete</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- Search overlay -->
+<div class="search-overlay" id="search-overlay" onclick="closeSearch(event)">
+  <div class="search-box" onclick="event.stopPropagation()">
+    <div class="search-input-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search-input" placeholder="Search everything…" oninput="doSearch(this.value)">
+      <button class="btn-icon" onclick="closeSearch()">✕</button>
+    </div>
+    <div class="search-results" id="search-results">
+      <div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px">Start typing to search…</div>
+    </div>
+  </div>
+</div>
+ 
+<!-- Quick add overlay -->
+<div class="quick-add-overlay" id="qa-overlay" onclick="closeQuickAdd(event)">
+  <div class="quick-add-box" onclick="event.stopPropagation()">
+    <div class="qa-title">Quick add</div>
+    <div class="qa-tabs">
+      <div class="qa-tab active" onclick="qaSwitch(this,'task')">Task</div>
+      <div class="qa-tab" onclick="qaSwitch(this,'expense')">Expense</div>
+      <div class="qa-tab" onclick="qaSwitch(this,'note')">Note</div>
+      <div class="qa-tab" onclick="qaSwitch(this,'event')">Event</div>
+    </div>
+    <div id="qa-task-form">
+      <div class="form-group" style="margin-bottom:10px"><label>Task</label><input class="form-input" id="qa-task-input" placeholder="What needs to be done?"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div class="form-group"><label>Priority</label><select class="form-input" id="qa-task-priority"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div>
+        <div class="form-group"><label>Due</label><input class="form-input" type="date" id="qa-task-due"></div>
+      </div>
+      <button class="btn-primary" style="width:100%" onclick="qaAddTask()">Add task</button>
+    </div>
+    <div id="qa-expense-form" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="form-group"><label>Description</label><input class="form-input" id="qa-exp-desc" placeholder="e.g. Coffee"></div>
+        <div class="form-group"><label>Amount (R)</label><input class="form-input" type="number" id="qa-exp-amount" placeholder="0.00"></div>
+      </div>
+      <div class="form-group" style="margin-bottom:16px"><label>Category</label><select class="form-input" id="qa-exp-cat"><option>Food</option><option>Transport</option><option>Utilities</option><option>Entertainment</option><option>Health</option><option>Income</option><option>Other</option></select></div>
+      <button class="btn-primary" style="width:100%" onclick="qaAddExpense()">Add expense</button>
+    </div>
+    <div id="qa-note-form" style="display:none">
+      <div class="form-group" style="margin-bottom:10px"><label>Title</label><input class="form-input" id="qa-note-title" placeholder="Note title"></div>
+      <div class="form-group" style="margin-bottom:16px"><label>Content</label><textarea class="form-input" id="qa-note-body" rows="3" placeholder="Quick note…" style="resize:none"></textarea></div>
+      <button class="btn-primary" style="width:100%" onclick="qaAddNote()">Save note</button>
+    </div>
+    <div id="qa-event-form" style="display:none">
+      <div class="form-group" style="margin-bottom:10px"><label>Event</label><input class="form-input" id="qa-ev-title" placeholder="e.g. Team meeting"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="form-group"><label>Date</label><input class="form-input" type="date" id="qa-ev-date"></div>
+        <div class="form-group"><label>Recurrence</label><select class="form-input" id="qa-ev-recur"><option value="once">Once</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select></div>
+      </div>
+      <button class="btn-primary" style="width:100%" onclick="qaAddEvent()">Add event</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- Toast -->
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toast-msg">Saved!</span></div>
+
 
 `
 </body>
