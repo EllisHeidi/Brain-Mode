@@ -1,84 +1,765 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrainFiles</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>BrainFiles</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e2128">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BrainFiles">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sidebar-bg:#1e2128;
+  --sidebar-w:260px;
+  --main-bg:#272b33;
+  --card-bg:#2f3340;
+  --card-border:#3a3f4e;
+  --text-primary:#e8eaf0;
+  --text-secondary:#9499a8;
+  --text-muted:#636878;
+  --accent:#4a7cf7;
+  --accent-light:#5d8df9;
+  --accent-dim:rgba(74,124,247,0.15);
+  --green:#3ecb7a;
+  --red:#f06b6b;
+  --amber:#f5a623;
+  --purple:#a78bfa;
+  --teal:#2dd4bf;
+  --high:#f06b6b;
+  --med:#f5a623;
+  --low:#3ecb7a;
+  --radius:10px;
+  --radius-lg:14px;
+  --transition:0.18s ease;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--main-bg);color:var(--text-primary);font-size:14px;line-height:1.5}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+input,textarea,select{font-family:inherit;outline:none}
 
+/* ── Layout ── */
+.app{display:flex;height:100vh;overflow:hidden}
 
+/* ── Sidebar ── */
+.sidebar{
+  width:var(--sidebar-w);min-width:var(--sidebar-w);
+  background:var(--sidebar-bg);
+  display:flex;flex-direction:column;
+  border-right:1px solid rgba(255,255,255,0.05);
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:4px}
 
+.brand{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.brand h1{font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-0.3px}
+.brand p{font-size:11px;color:var(--text-muted);margin-top:2px}
 
-    </style>
+.nav-section{padding:20px 12px 8px}
+.nav-label{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;padding:0 8px;margin-bottom:6px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;border-radius:8px;
+  cursor:pointer;color:var(--text-secondary);
+  transition:background var(--transition),color var(--transition);
+  position:relative;user-select:none;
+}
+.nav-item:hover{background:rgba(255,255,255,0.05);color:var(--text-primary)}
+.nav-item.active{background:var(--accent-dim);color:var(--accent-light)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:0.8}
+.nav-item.active svg{opacity:1}
+.nav-item span.label{flex:1;font-size:13px;font-weight:500}
+.nav-badge{
+  background:var(--accent);color:#fff;
+  font-size:10px;font-weight:600;
+  padding:1px 6px;border-radius:10px;
+  min-width:18px;text-align:center;
+}
+
+.folder-section{padding:8px 12px;flex:1}
+.folder-add-row{display:flex;align-items:center;gap:6px;padding:0 8px;margin-bottom:8px}
+.folder-add-row span{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;flex:1}
+.btn-icon{
+  width:22px;height:22px;border-radius:6px;
+  background:transparent;color:var(--text-muted);
+  display:flex;align-items:center;justify-content:center;
+  transition:all var(--transition);font-size:16px;line-height:1;
+}
+.btn-icon:hover{background:rgba(255,255,255,0.08);color:var(--text-primary)}
+
+.folder-input-row{display:flex;gap:6px;padding:4px 8px 8px}
+.folder-input-row input{
+  flex:1;background:var(--card-bg);border:1px solid var(--card-border);
+  color:var(--text-primary);padding:6px 10px;border-radius:7px;font-size:12px;
+}
+.folder-input-row input::placeholder{color:var(--text-muted)}
+.folder-input-row button{
+  background:var(--accent);color:#fff;padding:6px 10px;
+  border-radius:7px;font-size:12px;font-weight:500;
+}
+
+.folder-item{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:8px;
+  cursor:pointer;color:var(--text-secondary);
+  transition:all var(--transition);
+}
+.folder-item:hover{background:rgba(255,255,255,0.05);color:var(--text-primary)}
+.folder-item.active{background:var(--accent-dim);color:var(--accent-light)}
+.folder-item svg{width:14px;height:14px;flex-shrink:0}
+.folder-item .fname{flex:1;font-size:13px;font-weight:500}
+.folder-item .fdel{
+  opacity:0;width:18px;height:18px;border-radius:4px;
+  background:transparent;color:var(--red);
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  transition:opacity var(--transition);
+}
+.folder-item:hover .fdel{opacity:1}
+
+.user-strip{
+  margin-top:auto;padding:14px 16px;
+  border-top:1px solid rgba(255,255,255,0.05);
+  display:flex;align-items:center;gap:10px;
+}
+.avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;color:#fff;flex-shrink:0;
+}
+.user-name{font-size:13px;font-weight:500;color:var(--text-primary)}
+.user-plan{font-size:11px;color:var(--text-muted)}
+
+/* ── Main ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+.topbar{
+  padding:18px 28px 0;
+  display:flex;align-items:flex-start;justify-content:space-between;
+  flex-shrink:0;
+}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-left h2{font-size:20px;font-weight:600;letter-spacing:-0.3px}
+.topbar-left p{font-size:12px;color:var(--text-secondary);margin-top:2px}
+.topbar-right{display:flex;gap:10px;align-items:center}
+.hamburger{
+  display:none;width:36px;height:36px;border-radius:8px;
+  background:transparent;border:none;color:var(--text-primary);
+  cursor:pointer;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background var(--transition);
+}
+.hamburger:hover{background:rgba(255,255,255,0.08)}
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.55);z-index:490;
+  backdrop-filter:blur(2px);
+}
+.sidebar-overlay.open{display:block}
+.btn-search{
+  padding:8px 16px;border-radius:8px;
+  background:var(--card-bg);border:1px solid var(--card-border);
+  color:var(--text-secondary);font-size:13px;font-weight:500;
+  display:flex;align-items:center;gap:7px;transition:all var(--transition);
+}
+.btn-search:hover{border-color:var(--accent);color:var(--text-primary)}
+.btn-primary{
+  padding:8px 16px;border-radius:8px;
+  background:var(--accent);color:#fff;font-size:13px;font-weight:500;
+  display:flex;align-items:center;gap:7px;transition:all var(--transition);
+}
+.btn-primary:hover{background:var(--accent-light)}
+
+.content{flex:1;overflow-y:auto;padding:20px 28px 28px}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:4px}
+
+/* ── Views ── */
+.view{display:none}
+.view.active{display:block}
+
+/* ── Stats row ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:var(--radius-lg);padding:16px 18px;
+}
+.stat-card .slabel{font-size:11px;color:var(--text-muted);font-weight:500;margin-bottom:6px}
+.stat-card .sval{font-size:22px;font-weight:600;letter-spacing:-0.5px}
+.stat-card .sval.accent{color:var(--accent-light)}
+.stat-card .sval.red{color:var(--red)}
+.stat-card .sval.green{color:var(--green)}
+.stat-card .sval.amber{color:var(--amber)}
+
+/* ── Grid ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.grid-full{margin-bottom:14px}
+
+/* ── Cards ── */
+.card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:var(--radius-lg);padding:18px 20px;
+}
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.card-title{font-size:13px;font-weight:600;color:var(--text-primary)}
+.card-sub{font-size:11px;color:var(--text-secondary)}
+
+/* ── Expense list ── */
+.expense-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.expense-row:last-child{border:none}
+.expense-name{font-size:13px;font-weight:500;color:var(--text-primary)}
+.expense-cat{font-size:11px;color:var(--text-muted)}
+.expense-amt{font-size:13px;font-weight:600;font-family:'DM Mono',monospace}
+.expense-amt.pos{color:var(--green)}
+.expense-amt.neg{color:var(--red)}
+
+/* ── Debt tracker ── */
+.debt-item{margin-bottom:14px}
+.debt-item:last-child{margin:0}
+.debt-top{display:flex;justify-content:space-between;margin-bottom:6px}
+.debt-name{font-size:13px;font-weight:500;color:var(--text-primary)}
+.debt-total{font-size:12px;color:var(--text-muted);font-family:'DM Mono',monospace}
+.debt-bar{height:5px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;margin-bottom:5px}
+.debt-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:10px;transition:width 0.4s ease}
+.debt-meta{font-size:11px;color:var(--text-muted)}
+.debt-meta span{color:var(--green);font-weight:500}
+
+/* ── Mini calendar ── */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:6px}
+.cal-day-label{font-size:10px;color:var(--text-muted);text-align:center;padding:4px 0;font-weight:600;letter-spacing:0.3px}
+.cal-day{
+  font-size:13px;text-align:center;padding:9px 2px 5px;border-radius:7px;
+  cursor:pointer;color:var(--text-secondary);transition:all var(--transition);
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+.cal-day:hover{background:rgba(255,255,255,0.07);color:var(--text-primary)}
+.cal-day.today{background:var(--accent);color:#fff;font-weight:600}
+.cal-day.today .cal-dot{background:rgba(255,255,255,0.7)!important}
+.cal-day.selected:not(.today){background:var(--accent-dim);color:var(--accent-light)}
+.cal-day.past:not(.selected):not(.today){opacity:0.38}
+.cal-day.other-month{opacity:0.22}
+.cal-dots{display:flex;gap:2px;justify-content:center;min-height:5px}
+.cal-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.cal-dot.work{background:#7ba8ff}
+.cal-dot.personal{background:#5de397}
+.cal-dot.reminder{background:#f5c564}
+.cal-dot.debt{background:#c4b5fd}
+.cal-nav-btn{
+  width:26px;height:26px;border-radius:7px;background:transparent;border:none;
+  color:var(--text-secondary);font-size:16px;display:flex;align-items:center;justify-content:center;
+  transition:all var(--transition);cursor:pointer;
+}
+.cal-nav-btn:hover{background:rgba(255,255,255,0.08);color:var(--text-primary)}
+.dash-today-btn{
+  padding:2px 8px;border-radius:5px;background:var(--accent-dim);
+  color:var(--accent-light);font-size:10px;font-weight:600;border:none;cursor:pointer;
+  transition:all var(--transition);letter-spacing:0.3px;text-transform:uppercase;
+}
+.dash-today-btn:hover{background:var(--accent);color:#fff}
+.dash-cal-event-row{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 8px;border-radius:7px;margin-bottom:3px;font-size:12px;font-weight:500;
+}
+.dash-cal-event-row:last-child{margin-bottom:0}
+
+/* ── Tasks ── */
+.task-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.task-item:last-child{border:none}
+.task-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.task-dot.high{background:var(--high)}
+.task-dot.medium{background:var(--med)}
+.task-dot.low{background:var(--low)}
+.task-text{flex:1;font-size:13px;color:var(--text-primary)}
+.task-text.done{text-decoration:line-through;color:var(--text-muted)}
+.task-check{
+  width:16px;height:16px;border-radius:4px;border:1.5px solid var(--card-border);
+  cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all var(--transition);
+}
+.task-check.checked{background:var(--green);border-color:var(--green)}
+.task-check.checked::after{content:'✓';font-size:10px;color:#fff;font-weight:700}
+
+/* ── Recent note ── */
+.note-preview{font-size:12px;color:var(--text-secondary);line-height:1.6;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--accent)}
+
+/* ══════════════════════════════════
+   EXPENSES VIEW
+══════════════════════════════════ */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.page-title{font-size:16px;font-weight:600}
+
+.tabs{display:flex;gap:4px;background:var(--sidebar-bg);padding:4px;border-radius:10px;width:fit-content;margin-bottom:20px}
+.tab{padding:7px 16px;border-radius:7px;font-size:12px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all var(--transition)}
+.tab.active{background:var(--card-bg);color:var(--text-primary)}
+
+.expense-form{
+  display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;
+  align-items:end;margin-bottom:20px;
+}
+.form-group label{font-size:11px;color:var(--text-muted);font-weight:600;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px}
+.form-input{
+  width:100%;background:var(--card-bg);border:1px solid var(--card-border);
+  color:var(--text-primary);padding:9px 12px;border-radius:8px;font-size:13px;
+  transition:border-color var(--transition);
+}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--text-muted)}
+select.form-input option{background:var(--card-bg)}
+.btn-add{
+  padding:9px 18px;background:var(--accent);color:#fff;border-radius:8px;
+  font-size:13px;font-weight:500;white-space:nowrap;transition:all var(--transition);
+  height:38px;
+}
+.btn-add:hover{background:var(--accent-light)}
+
+.expense-table{width:100%;border-collapse:collapse}
+.expense-table th{font-size:11px;color:var(--text-muted);font-weight:600;text-align:left;padding:8px 12px;letter-spacing:0.5px;text-transform:uppercase;border-bottom:1px solid var(--card-border)}
+.expense-table td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
+.expense-table tr:hover td{background:rgba(255,255,255,0.02)}
+.expense-table tr:last-child td{border:none}
+.cat-pill{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500;background:var(--accent-dim);color:var(--accent-light)}
+
+/* ── Savings tab ── */
+.sav-bar-full{height:8px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;margin:10px 0}
+.sav-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--teal));border-radius:10px;transition:width 0.5s ease}
+.sav-deposit-btn{padding:7px 14px;background:rgba(62,203,122,0.15);color:var(--green);border-radius:7px;font-size:12px;font-weight:500;transition:all var(--transition)}
+.sav-deposit-btn:hover{background:var(--green);color:#1e2128}
+
+/* ── Debt tab ── */
+.debt-card-full{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px;
+}
+.debt-bar-full{height:8px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;margin:10px 0}
+.debt-fill-full{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:10px;transition:width 0.5s ease}
+.debt-stats{display:flex;gap:20px;margin-top:8px}
+.debt-stat{font-size:12px;color:var(--text-muted)}
+.debt-stat strong{color:var(--text-primary);font-family:'DM Mono',monospace}
+.debt-pay-btn{padding:7px 14px;background:var(--accent-dim);color:var(--accent-light);border-radius:7px;font-size:12px;font-weight:500;transition:all var(--transition)}
+.debt-pay-btn:hover{background:var(--accent);color:#fff}
+
+/* ══════════════════════════════════
+   CALENDAR VIEW
+══════════════════════════════════ */
+.calendar-full{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:20px}
+.cal-full-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.cal-full-title{font-size:16px;font-weight:600}
+.cal-full-nav{display:flex;gap:8px;align-items:center}
+.cal-full-nav button{
+  padding:6px 12px;background:var(--card-bg);border:1px solid var(--card-border);
+  color:var(--text-secondary);border-radius:7px;font-size:12px;cursor:pointer;
+  transition:all var(--transition);
+}
+.cal-full-nav button:hover{border-color:var(--accent);color:var(--text-primary)}
+.cal-full-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--card-border)}
+.cal-full-day-label{background:var(--card-bg);font-size:11px;color:var(--text-muted);font-weight:600;text-align:center;padding:8px 4px;letter-spacing:0.5px}
+.cal-full-day{
+  background:var(--card-bg);min-height:80px;padding:6px;
+  cursor:pointer;transition:background var(--transition);position:relative;
+}
+.cal-full-day:hover{background:rgba(255,255,255,0.03)}
+.cal-full-day.today{background:rgba(74,124,247,0.08)}
+.cal-full-day.other-month{opacity:0.4}
+.cal-full-day .day-num{font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:3px}
+.cal-full-day.today .day-num{color:var(--accent);font-weight:700}
+.cal-event{
+  font-size:10px;padding:2px 5px;border-radius:4px;margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;
+}
+.cal-event.work{background:rgba(74,124,247,0.2);color:#7ba8ff}
+.cal-event.personal{background:rgba(62,203,122,0.2);color:#5de397}
+.cal-event.reminder{background:rgba(245,166,35,0.2);color:#f5c564}
+.cal-event.debt{background:rgba(167,139,250,0.2);color:#c4b5fd}
+
+.event-panel{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:18px 20px;margin-top:14px}
+.event-form{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;align-items:end}
+.recur-badge{font-size:10px;padding:1px 6px;border-radius:8px;font-weight:500}
+.recur-badge.weekly{background:rgba(62,203,122,0.15);color:var(--green)}
+.recur-badge.monthly{background:rgba(74,124,247,0.15);color:var(--accent-light)}
+.recur-badge.yearly{background:rgba(167,139,250,0.15);color:var(--purple)}
+.recur-badge.once{background:rgba(255,255,255,0.05);color:var(--text-muted)}
+
+/* ══════════════════════════════════
+   TASKS VIEW
+══════════════════════════════════ */
+.task-filters{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.filter-chip{
+  padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;
+  background:var(--card-bg);border:1px solid var(--card-border);
+  color:var(--text-muted);cursor:pointer;transition:all var(--transition);
+}
+.filter-chip.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent-light)}
+.filter-chip:hover:not(.active){border-color:rgba(255,255,255,0.15);color:var(--text-primary)}
+
+.task-add-row{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;margin-bottom:20px;align-items:end}
+.task-card-full{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:var(--radius-lg);padding:14px 16px;
+  display:flex;align-items:center;gap:12px;margin-bottom:8px;
+  transition:all var(--transition);
+}
+.task-card-full:hover{border-color:rgba(255,255,255,0.12)}
+.task-card-full.done-card{opacity:0.5}
+.priority-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.priority-dot.high{background:var(--high)}
+.priority-dot.medium{background:var(--med)}
+.priority-dot.low{background:var(--low)}
+.task-info{flex:1}
+.task-title-full{font-size:13px;font-weight:500;color:var(--text-primary)}
+.task-title-full.done{text-decoration:line-through;color:var(--text-muted)}
+.task-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+.task-del{
+  width:26px;height:26px;border-radius:6px;background:transparent;
+  color:var(--text-muted);font-size:16px;display:flex;align-items:center;justify-content:center;
+  transition:all var(--transition);
+}
+.task-del:hover{background:rgba(240,107,107,0.15);color:var(--red)}
+.checkbox-big{
+  width:20px;height:20px;border-radius:5px;border:1.5px solid var(--card-border);
+  cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all var(--transition);
+}
+.checkbox-big.checked{background:var(--green);border-color:var(--green)}
+.checkbox-big.checked::after{content:'✓';font-size:12px;color:#fff;font-weight:700}
+
+/* ══════════════════════════════════
+   NOTES VIEW
+══════════════════════════════════ */
+.notes-layout{display:grid;grid-template-columns:240px 1fr;gap:14px;height:calc(100vh - 160px)}
+.notes-list{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius-lg);overflow-y:auto;padding:8px}
+.notes-list::-webkit-scrollbar{width:4px}
+.notes-list::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:4px}
+.note-list-item{
+  padding:10px 12px;border-radius:8px;cursor:pointer;
+  transition:background var(--transition);border-bottom:1px solid rgba(255,255,255,0.03);
+}
+.note-list-item:last-child{border:none}
+.note-list-item:hover{background:rgba(255,255,255,0.04)}
+.note-list-item.active{background:var(--accent-dim)}
+.note-list-title{font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:3px}
+.note-list-preview{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note-list-date{font-size:10px;color:var(--text-muted);margin-top:3px}
+
+.note-editor{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;gap:14px;position:relative}
+.note-editor.drag-over{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+.drop-hint{
+  display:none;position:absolute;inset:0;align-items:center;justify-content:center;
+  gap:8px;background:rgba(74,124,247,0.08);border-radius:var(--radius-lg);
+  font-size:14px;font-weight:500;color:var(--accent);pointer-events:none;z-index:10;
+}
+.note-editor.drag-over .drop-hint{display:flex}
+.attachments-area{display:flex;flex-wrap:wrap;gap:8px}
+.attachments-area:empty{display:none}
+.attach-img-wrap{position:relative;display:inline-block}
+.attach-img{width:72px;height:72px;object-fit:cover;border-radius:7px;border:1px solid var(--card-border);cursor:pointer;display:block;transition:opacity var(--transition)}
+.attach-img:hover{opacity:0.8}
+.attach-chip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);border-radius:8px;padding:6px 10px;max-width:240px}
+.attach-chip-name{font-size:12px;color:var(--text-primary);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.attach-chip-size{font-size:11px;color:var(--text-muted);white-space:nowrap;flex-shrink:0}
+.attach-btn{width:20px;height:20px;border-radius:4px;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--transition);font-size:13px;color:var(--text-muted)}
+.attach-btn:hover.dl{color:var(--accent)}
+.attach-btn:hover.op{color:var(--green)}
+.attach-btn:hover.rm{background:rgba(240,107,107,0.15);color:var(--red)}
+.attach-corner{position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.65);border-radius:4px}
+.note-editor-title{
+  background:transparent;border:none;font-size:18px;font-weight:600;
+  color:var(--text-primary);width:100%;border-bottom:1px solid var(--card-border);
+  padding-bottom:12px;
+}
+.note-editor-title::placeholder{color:var(--text-muted)}
+.note-editor-body{
+  background:transparent;border:none;font-size:14px;color:var(--text-primary);
+  width:100%;flex:1;resize:none;line-height:1.7;min-height:300px;
+}
+.note-editor-body::placeholder{color:var(--text-muted)}
+.note-toolbar{display:flex;gap:8px;align-items:center;padding-top:10px;border-top:1px solid var(--card-border)}
+
+/* ══════════════════════════════════
+   CUSTOM FOLDER VIEW
+══════════════════════════════════ */
+.folder-view-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.folder-icon-big{
+  width:40px;height:40px;border-radius:10px;
+  background:var(--accent-dim);display:flex;align-items:center;justify-content:center;
+}
+
+/* ── Modal ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.6);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1000;backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;transition:opacity var(--transition);
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:var(--radius-lg);padding:24px;width:420px;max-width:95vw;
+  transform:scale(0.95);transition:transform var(--transition);
+}
+.modal-overlay.open .modal{transform:scale(1)}
+.modal-title{font-size:15px;font-weight:600;margin-bottom:16px}
+.modal-field{margin-bottom:14px}
+.modal-field label{font-size:11px;color:var(--text-muted);font-weight:600;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.btn-cancel{padding:8px 16px;border-radius:8px;background:transparent;border:1px solid var(--card-border);color:var(--text-secondary);font-size:13px;font-weight:500;transition:all var(--transition)}
+.btn-cancel:hover{border-color:rgba(255,255,255,0.2);color:var(--text-primary)}
+
+/* ── Search overlay ── */
+.search-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  display:flex;align-items:flex-start;justify-content:center;padding-top:100px;
+  z-index:2000;backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;transition:opacity var(--transition);
+}
+.search-overlay.open{opacity:1;pointer-events:all}
+.search-box{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:var(--radius-lg);width:520px;max-width:95vw;overflow:hidden;
+  transform:translateY(-10px);transition:transform var(--transition);
+}
+.search-overlay.open .search-box{transform:translateY(0)}
+.search-input-wrap{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--card-border)}
+.search-input-wrap input{flex:1;background:transparent;border:none;font-size:15px;color:var(--text-primary)}
+.search-input-wrap input::placeholder{color:var(--text-muted)}
+.search-results{padding:8px;max-height:300px;overflow-y:auto}
+.search-result-item{padding:10px 12px;border-radius:8px;cursor:pointer;transition:background var(--transition)}
+.search-result-item:hover{background:rgba(255,255,255,0.05)}
+.sr-type{font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px}
+.sr-title{font-size:13px;color:var(--text-primary);font-weight:500}
+
+/* ── Toast ── */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:#1e2128;border:1px solid var(--card-border);
+  color:var(--text-primary);padding:12px 18px;border-radius:10px;
+  font-size:13px;font-weight:500;z-index:9999;
+  transform:translateY(20px);opacity:0;transition:all 0.3s ease;
+  display:flex;align-items:center;gap:8px;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+
+/* ══════════════════════════════════
+   LINKS VIEW
+══════════════════════════════════ */
+.link-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.link-card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:var(--radius-lg);padding:14px 16px;
+  display:flex;flex-direction:column;gap:10px;
+  transition:border-color var(--transition);
+}
+.link-card:hover{border-color:rgba(255,255,255,0.15)}
+.link-card-top{display:flex;align-items:flex-start;gap:10px}
+.link-favicon{width:20px;height:20px;border-radius:4px;flex-shrink:0;margin-top:1px}
+.link-favicon-fallback{width:20px;height:20px;border-radius:4px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.link-info{flex:1;min-width:0}
+.link-title-text{font-size:13px;font-weight:500;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.link-domain{font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.link-card-bottom{display:flex;align-items:center;gap:6px}
+.link-open-btn{
+  flex:1;padding:6px 10px;background:var(--accent-dim);color:var(--accent-light);
+  border-radius:7px;font-size:12px;font-weight:500;text-align:center;
+  transition:all var(--transition);cursor:pointer;border:none;font-family:inherit;
+}
+.link-open-btn:hover{background:var(--accent);color:#fff}
+.link-del-btn{
+  width:28px;height:28px;border-radius:7px;background:transparent;
+  color:var(--text-muted);font-size:16px;display:flex;align-items:center;justify-content:center;
+  transition:all var(--transition);border:none;cursor:pointer;
+}
+.link-del-btn:hover{background:rgba(240,107,107,0.15);color:var(--red)}
+
+/* ══════════════════════════════════
+   COUNTDOWNS VIEW
+══════════════════════════════════ */
+.countdown-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.countdown-card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:var(--radius-lg);padding:22px 18px 16px;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  position:relative;transition:border-color var(--transition);
+}
+.countdown-card:hover{border-color:rgba(255,255,255,0.15)}
+.countdown-days{font-size:52px;font-weight:700;letter-spacing:-2px;line-height:1}
+.countdown-days.urgent{color:var(--red)}
+.countdown-days.soon{color:var(--amber)}
+.countdown-days.future{color:var(--green)}
+.countdown-days.past{color:var(--text-muted)}
+.countdown-days.today{color:var(--accent-light)}
+.countdown-unit{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-top:5px}
+.countdown-name{font-size:14px;font-weight:600;color:var(--text-primary);margin-top:14px}
+.countdown-date{font-size:11px;color:var(--text-muted);margin-top:3px}
+.countdown-del{
+  position:absolute;top:10px;right:10px;
+  width:22px;height:22px;border-radius:5px;background:transparent;
+  color:var(--text-muted);font-size:16px;display:flex;align-items:center;justify-content:center;
+  transition:all var(--transition);border:none;cursor:pointer;
+}
+.countdown-del:hover{background:rgba(240,107,107,0.15);color:var(--red)}
+.countdown-bar-wrap{width:100%;margin-top:14px;height:3px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden}
+.countdown-bar-fill{height:100%;border-radius:10px;transition:width 0.5s ease;opacity:0.5}
+
+/* ── Empty state ── */
+.empty-state{text-align:center;padding:48px 20px;color:var(--text-muted)}
+.empty-state svg{width:40px;height:40px;opacity:0.3;margin:0 auto 12px;display:block}
+.empty-state p{font-size:13px}
+
+/* ── Quick-add bar ── */
+.quick-add-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.5);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1500;backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity var(--transition);
+}
+.quick-add-overlay.open{opacity:1;pointer-events:all}
+.quick-add-box{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:var(--radius-lg);padding:24px;width:460px;max-width:95vw;
+  transform:scale(0.95);transition:transform var(--transition);
+}
+.quick-add-overlay.open .quick-add-box{transform:scale(1)}
+.qa-title{font-size:14px;font-weight:600;margin-bottom:16px;color:var(--text-secondary)}
+.qa-tabs{display:flex;gap:4px;background:var(--sidebar-bg);padding:4px;border-radius:8px;margin-bottom:16px}
+.qa-tab{flex:1;padding:6px;text-align:center;border-radius:6px;font-size:12px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all var(--transition)}
+.qa-tab.active{background:var(--card-bg);color:var(--text-primary)}
+
+/* ══════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════ */
+@media(max-width:768px){
+  /* Sidebar: fixed overlay */
+  .hamburger{display:flex}
+  .sidebar{
+    position:fixed;left:calc(-1 * var(--sidebar-w) - 10px);top:0;bottom:0;
+    z-index:500;transition:left 0.28s ease;
+  }
+  .sidebar.open{left:0;box-shadow:6px 0 32px rgba(0,0,0,0.45)}
+
+  /* Layout */
+  .topbar{padding:14px 16px 0;align-items:center}
+  .topbar-left p{display:none}
+  .topbar-left h2{font-size:17px}
+  .content{padding:14px 16px 28px}
+
+  /* Hide Search label, keep icon */
+  .btn-label{display:none}
+  .btn-search{padding:8px 10px}
+  .btn-primary{padding:8px 12px}
+
+  /* Stats: 2 columns */
+  .stats-row{grid-template-columns:repeat(2,1fr)!important}
+
+  /* All 2-col grids → 1 col */
+  .grid-2{grid-template-columns:1fr}
+
+  /* All expense/event/link/countdown add forms → 2 col, button full width */
+  .expense-form{grid-template-columns:1fr 1fr!important}
+  .expense-form>.btn-add{grid-column:1/-1}
+  .event-form{grid-template-columns:1fr 1fr!important}
+  .event-form>.btn-add{grid-column:1/-1}
+
+  /* Task add row */
+  .task-add-row{grid-template-columns:1fr 1fr}
+  .task-add-row>.btn-add{grid-column:1/-1;margin-top:0!important}
+
+  /* Countdown + link grids */
+  .countdown-grid{grid-template-columns:1fr 1fr}
+  .link-grid{grid-template-columns:1fr}
+
+  /* Notes: stacked */
+  .notes-layout{grid-template-columns:1fr;height:auto}
+  .notes-list{height:180px;max-height:180px}
+  .note-editor-body{min-height:200px}
+
+  /* Full calendar */
+  .cal-full-day{min-height:56px;padding:4px 3px}
+  .cal-event{font-size:9px;padding:1px 3px}
+  .cal-full-day-label{font-size:10px;padding:6px 2px}
+
+  /* Tabs wrap */
+  .tabs{flex-wrap:wrap}
+
+  /* Search + modals full width */
+  .search-overlay{padding-top:60px}
+  .search-box{width:95vw}
+  .modal{width:95vw}
+  .quick-add-box{width:95vw;padding:18px 16px}
+
+  /* QA tabs: scroll horizontally */
+  .qa-tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+  .qa-tab{flex-shrink:0;white-space:nowrap}
+
+  /* Page headers */
+  .page-header{flex-wrap:wrap;gap:8px}
+  .folder-view-header{flex-wrap:wrap}
+}
+
+@media(max-width:480px){
+  .stats-row{grid-template-columns:repeat(2,1fr)!important}
+  .countdown-grid{grid-template-columns:1fr}
+  .countdown-days{font-size:40px}
+  .topbar-right .btn-search{display:none}
+}
+</style>
 </head>
 <body>
 
 <div class="app">
-
-<!-- SIDEBAR -->
- <aside class="sidebar">
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
     <div class="brand">
-        <h1>BrainFiles</h1>
-        <p>Organize your thoughts</p>
+      <h1>BrainFiles</h1>
+      <p>your space, your way</p>
     </div>
 
     <div class="nav-section">
-        <div class="nav-label">Default</div>
-        <div class="nav-item active" data-view="dashboard">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <rect x="3" y="3" width="7" height="7" rx="1"/>
-                <rect x="14" y="3" width="7" height="7" rx="1"/>
-                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                <rect x="14" y="14" width="7" height="7" rx="1"/>
-            </svg>
-
-         <span class="label">Dashboard</span>
-        </div>
-        <div class="nav-item" data-view="expenses">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <rect x="3" y="3" width="7" height="7" rx="1"/>
-                <rect x="14" y="3" width="7" height="7" rx="1"/>
-                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                <rect x="14" y="14" width="7" height="7" rx="1"/>
-            </svg>
-
-         <span class="label">Dashboard</span>
-         </div>
-         <div class="nav-item" data-view="expenses">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"></svg>
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-            <path d="M12 6v12M9 9h4.5a1.5 1.5 0 010 3H10a1.5 1.5 0 000 3H15"/></svg>
-
-         <span class="label">Expenses</span>
-          <span class="nav-badge" id="expense-badge">0</span>
-          </div>
-          <div class="nav-item" data-view="calendar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <rect x="3" y="4" width="18" height="18" rx="2"/>
-                <path d="M16 2v4M8 2v4M3 10h18"/>
-            </svg>
-
-            <span class="label">Calendar</span>
-            </div>
-            <div class="nav-item" data-view="tasks">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M9 11l3 3L22 4"/>
-                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-                </svg>
-            
-            <span class="label">Tasks</span>
-            <span class="nav-badge" id="task-badge">0</span>
-             </div>
-             <div class="nav-item" data-view="notes">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
-                    <line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>
-                </svg>
-
-            <span class="label">Notes</span>
-        </div>
+      <div class="nav-label">Default</div>
+      <div class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span class="label">Dashboard</span>
+      </div>
+      <div class="nav-item" data-view="expenses">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v12M9 9h4.5a1.5 1.5 0 010 3H10a1.5 1.5 0 000 3H15"/></svg>
+        <span class="label">Expenses</span>
+        <span class="nav-badge" id="expense-badge">0</span>
+      </div>
+      <div class="nav-item" data-view="tasks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <span class="label">Tasks</span>
+        <span class="nav-badge" id="task-badge">0</span>
+      </div>
+      <div class="nav-item" data-view="links">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        <span class="label">Links</span>
+        <span class="nav-badge" id="link-badge">0</span>
+      </div>
+      <div class="nav-item" data-view="calendar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span class="label">Calendar</span>
+      </div>
+      <div class="nav-item" data-view="notes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+        <span class="label">Notes</span>
+      </div>
+      <div class="nav-item" data-view="countdowns">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span class="label">Countdowns</span>
+      </div>
     </div>
 
     <div class="folder-section">
@@ -92,41 +773,36 @@
       </div>
       <div id="custom-folders"></div>
     </div>
- 
-    <div class="user-strip">
-      <div class="avatar" id="user-avatar"></div>
-      <div>
-        <div class="user-name" id="user-name-display">Hello, User
-        </div>
-      </div>
-    </div>
+
   </aside>
 
-  <!-- MAIN CONTENT -->
+  <!-- MAIN -->
   <main class="main">
-    <div class="topbar-left">
-     <h2 id="page-title">Welcome to BrainFiles</h2>
-     <p id="page-date"></p>
-    </div>
-    <div class="topbar-right">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div>
+          <h2 id="page-title">Good evening 👋</h2>
+          <p id="page-date"></p>
+        </div>
+      </div>
+      <div class="topbar-right">
         <button class="btn-search" onclick="openSearch()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-
-           Search
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <span class="btn-label">Search</span>
         </button>
         <button class="btn-primary" onclick="openQuickAdd()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Quick add
+          <span class="btn-label">Quick add</span>
         </button>
       </div>
     </div>
- 
-    <div class="content">
-      <p>Organize your thoughts, tasks, and ideas in one place. Create folders to keep everything tidy and easily accessible.</p>
 
-         <!-- ── DASHBOARD ── -->
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
       <div class="view active" id="view-dashboard">
         <div class="stats-row" id="stats-row"></div>
         <div class="grid-2">
@@ -138,15 +814,16 @@
             <div id="dash-expenses"></div>
           </div>
           <div class="card">
-            <div class="card-header">
-              <span class="card-title" id="dash-cal-title"></span>
-            </div>
-            <div class="cal-nav">
-              <button onclick="dashCalPrev()">‹</button>
-              <span id="dash-cal-month"></span>
-              <button onclick="dashCalNext()">›</button>
+            <div class="card-header" style="margin-bottom:4px">
+              <button class="cal-nav-btn" onclick="dashCalPrev()">‹</button>
+              <span class="card-title" id="dash-cal-month"></span>
+              <div style="display:flex;gap:6px;align-items:center">
+                <button class="dash-today-btn" id="dash-today-btn" style="display:none" onclick="dashCalToday()">Today</button>
+                <button class="cal-nav-btn" onclick="dashCalNext()">›</button>
+              </div>
             </div>
             <div class="cal-grid" id="dash-cal-grid"></div>
+            <div id="dash-cal-events"></div>
           </div>
         </div>
         <div class="grid-2">
@@ -159,7 +836,11 @@
             <div id="dash-tasks"></div>
           </div>
         </div>
-        <div class="grid-full">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Savings goals</span></div>
+            <div id="dash-savings"></div>
+          </div>
           <div class="card">
             <div class="card-header"><span class="card-title">Recent note</span></div>
             <div id="dash-note"></div>
@@ -168,14 +849,14 @@
       </div>
 
       <!-- ── EXPENSES ── -->
-        <div class="view" id="view-expenses">
-            <div class="view" id="view-expenses">
+      <div class="view" id="view-expenses">
         <div class="page-header">
           <span class="page-title">Expenses</span>
         </div>
         <div class="tabs">
           <div class="tab active" onclick="switchExpTab(this,'transactions')">Transactions</div>
           <div class="tab" onclick="switchExpTab(this,'debt')">Debt Tracker</div>
+          <div class="tab" onclick="switchExpTab(this,'savings')">Savings</div>
           <div class="tab" onclick="switchExpTab(this,'summary')">Summary</div>
         </div>
 
@@ -193,14 +874,9 @@
             <div class="form-group">
               <label>Category</label>
               <select class="form-input" id="exp-cat">
-                <option>Food</option>
-                <option>Transport</option>
-                <option>Utilities</option>
-                <option>Entertainment</option>
-                <option>Health</option>
-                <option>Income</option>
-                <option>Clothing</option>
-                <option>Other</option>
+                <option>Food</option><option>Transport</option><option>Utilities</option>
+                <option>Entertainment</option><option>Health</option><option>Income</option>
+                <option>Clothing</option><option>Other</option>
               </select>
             </div>
             <button class="btn-add" onclick="addExpense()">+ Add</button>
@@ -233,6 +909,26 @@
           <div id="debt-list"></div>
         </div>
 
+        <!-- Savings tab -->
+        <div id="exp-savings" style="display:none">
+          <div class="expense-form" style="grid-template-columns:1fr 1fr 1fr auto">
+            <div class="form-group">
+              <label>Goal Name</label>
+              <input class="form-input" id="sav-name" placeholder="e.g. Emergency Fund">
+            </div>
+            <div class="form-group">
+              <label>Target (R)</label>
+              <input class="form-input" id="sav-target" type="number" placeholder="0.00">
+            </div>
+            <div class="form-group">
+              <label>Saved So Far (R)</label>
+              <input class="form-input" id="sav-saved" type="number" placeholder="0.00">
+            </div>
+            <button class="btn-add" onclick="addSavingsGoal()">+ Add</button>
+          </div>
+          <div id="savings-list"></div>
+        </div>
+
         <!-- Summary tab -->
         <div id="exp-summary" style="display:none">
           <div class="stats-row" id="exp-summary-stats" style="grid-template-columns:repeat(3,1fr)"></div>
@@ -242,7 +938,6 @@
           </div>
         </div>
       </div>
-
 
       <!-- ── CALENDAR ── -->
       <div class="view" id="view-calendar">
@@ -297,7 +992,7 @@
         </div>
       </div>
 
-       <!-- ── TASKS ── -->
+      <!-- ── TASKS ── -->
       <div class="view" id="view-tasks">
         <div class="task-filters" id="task-filters">
           <div class="filter-chip active" data-filter="all">All</div>
@@ -327,7 +1022,7 @@
         </div>
         <div id="tasks-list"></div>
       </div>
- 
+
       <!-- ── NOTES ── -->
       <div class="view" id="view-notes">
         <div class="page-header">
@@ -336,9 +1031,14 @@
         </div>
         <div class="notes-layout">
           <div class="notes-list" id="notes-list"></div>
-          <div class="note-editor">
+          <div class="note-editor" id="main-note-editor">
+            <div class="drop-hint">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Drop files to attach
+            </div>
             <input class="note-editor-title" id="note-title" placeholder="Note title…" oninput="saveCurrentNote()">
             <textarea class="note-editor-body" id="note-body" placeholder="Start writing…" oninput="saveCurrentNote()"></textarea>
+            <div class="attachments-area" id="note-attachments"></div>
             <div class="note-toolbar">
               <span style="font-size:11px;color:var(--text-muted);flex:1" id="note-saved-status">Start typing to save</span>
               <button class="btn-cancel" onclick="deleteCurrentNote()">Delete note</button>
@@ -346,14 +1046,63 @@
           </div>
         </div>
       </div>
- 
+
+      <!-- ── LINKS ── -->
+      <div class="view" id="view-links">
+        <div class="page-header">
+          <span class="page-title">Links</span>
+        </div>
+        <div class="card" style="margin-bottom:14px;padding:16px 20px">
+          <div class="expense-form" style="grid-template-columns:2fr 1fr 1fr auto">
+            <div class="form-group">
+              <label>URL</label>
+              <input class="form-input" id="link-url" placeholder="https://…" onkeydown="if(event.key==='Enter')addLink()">
+            </div>
+            <div class="form-group">
+              <label>Title (optional)</label>
+              <input class="form-input" id="link-title" placeholder="Page title" onkeydown="if(event.key==='Enter')addLink()">
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <input class="form-input" id="link-cat" placeholder="e.g. Work, Dev…" onkeydown="if(event.key==='Enter')addLink()">
+            </div>
+            <button class="btn-add" onclick="addLink()">+ Add</button>
+          </div>
+        </div>
+        <div class="task-filters" id="link-filters"></div>
+        <div id="links-grid"></div>
+      </div>
+
+      <!-- ── COUNTDOWNS ── -->
+      <div class="view" id="view-countdowns">
+        <div class="page-header">
+          <span class="page-title">Countdowns</span>
+        </div>
+        <div class="card" style="margin-bottom:14px;padding:16px 20px">
+          <div class="expense-form" style="grid-template-columns:2fr 1fr 1fr auto">
+            <div class="form-group">
+              <label>Name</label>
+              <input class="form-input" id="cd-name" placeholder="e.g. Holiday to Bali">
+            </div>
+            <div class="form-group">
+              <label>Date</label>
+              <input class="form-input" id="cd-date" type="date">
+            </div>
+            <div class="form-group">
+              <label>Category (optional)</label>
+              <input class="form-input" id="cd-cat" placeholder="e.g. Travel">
+            </div>
+            <button class="btn-add" onclick="addCountdown()">+ Add</button>
+          </div>
+        </div>
+        <div id="countdowns-grid"></div>
+      </div>
+
       <!-- ── FOLDER VIEW ── -->
       <div class="view" id="view-folder">
         <div class="folder-view-header">
           <div class="folder-icon-big">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="1.8">
-              <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
-            </svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
           </div>
           <div>
             <div class="page-title" id="folder-view-title">Folder</div>
@@ -363,9 +1112,14 @@
         </div>
         <div class="notes-layout">
           <div class="notes-list" id="folder-notes-list"></div>
-          <div class="note-editor">
+          <div class="note-editor" id="folder-note-editor">
+            <div class="drop-hint">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Drop files to attach
+            </div>
             <input class="note-editor-title" id="folder-note-title" placeholder="Note title…" oninput="saveFolderNote()">
             <textarea class="note-editor-body" id="folder-note-body" placeholder="Start writing…" oninput="saveFolderNote()"></textarea>
+            <div class="attachments-area" id="folder-note-attachments"></div>
             <div class="note-toolbar">
               <span style="font-size:11px;color:var(--text-muted);flex:1" id="folder-note-status">Start typing to save</span>
               <button class="btn-cancel" onclick="deleteFolderNote()">Delete note</button>
@@ -373,11 +1127,11 @@
           </div>
         </div>
       </div>
- 
+
     </div><!-- .content -->
   </main>
 </div>
- 
+
 <!-- Modal: pay debt -->
 <div class="modal-overlay" id="pay-modal">
   <div class="modal">
@@ -392,7 +1146,22 @@
     </div>
   </div>
 </div>
- 
+
+<!-- Modal: savings deposit -->
+<div class="modal-overlay" id="savings-modal">
+  <div class="modal">
+    <div class="modal-title" id="savings-modal-title">Add to savings</div>
+    <div class="modal-field">
+      <label>Amount (R)</label>
+      <input class="form-input" id="sav-deposit" type="number" placeholder="0.00" style="width:100%">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('savings-modal')">Cancel</button>
+      <button class="btn-primary" style="background:var(--green)" onclick="submitSavingsDeposit()">Add funds</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: event detail -->
 <div class="modal-overlay" id="event-modal">
   <div class="modal">
@@ -404,7 +1173,7 @@
     </div>
   </div>
 </div>
- 
+
 <!-- Search overlay -->
 <div class="search-overlay" id="search-overlay" onclick="closeSearch(event)">
   <div class="search-box" onclick="event.stopPropagation()">
@@ -418,7 +1187,7 @@
     </div>
   </div>
 </div>
- 
+
 <!-- Quick add overlay -->
 <div class="quick-add-overlay" id="qa-overlay" onclick="closeQuickAdd(event)">
   <div class="quick-add-box" onclick="event.stopPropagation()">
@@ -428,6 +1197,8 @@
       <div class="qa-tab" onclick="qaSwitch(this,'expense')">Expense</div>
       <div class="qa-tab" onclick="qaSwitch(this,'note')">Note</div>
       <div class="qa-tab" onclick="qaSwitch(this,'event')">Event</div>
+      <div class="qa-tab" onclick="qaSwitch(this,'link')">Link</div>
+      <div class="qa-tab" onclick="qaSwitch(this,'countdown')">Countdown</div>
     </div>
     <div id="qa-task-form">
       <div class="form-group" style="margin-bottom:10px"><label>Task</label><input class="form-input" id="qa-task-input" placeholder="What needs to be done?"></div>
@@ -447,7 +1218,8 @@
     </div>
     <div id="qa-note-form" style="display:none">
       <div class="form-group" style="margin-bottom:10px"><label>Title</label><input class="form-input" id="qa-note-title" placeholder="Note title"></div>
-      <div class="form-group" style="margin-bottom:16px"><label>Content</label><textarea class="form-input" id="qa-note-body" rows="3" placeholder="Quick note…" style="resize:none"></textarea></div>
+      <div class="form-group" style="margin-bottom:10px"><label>Content</label><textarea class="form-input" id="qa-note-body" rows="3" placeholder="Quick note…" style="resize:none"></textarea></div>
+      <div class="form-group" style="margin-bottom:16px"><label>Save to</label><select class="form-input" id="qa-note-folder"><option value="">Notes (default)</option></select></div>
       <button class="btn-primary" style="width:100%" onclick="qaAddNote()">Save note</button>
     </div>
     <div id="qa-event-form" style="display:none">
@@ -458,13 +1230,1269 @@
       </div>
       <button class="btn-primary" style="width:100%" onclick="qaAddEvent()">Add event</button>
     </div>
+    <div id="qa-link-form" style="display:none">
+      <div class="form-group" style="margin-bottom:10px"><label>URL</label><input class="form-input" id="qa-link-url" placeholder="https://…"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div class="form-group"><label>Title (optional)</label><input class="form-input" id="qa-link-title" placeholder="Page title"></div>
+        <div class="form-group"><label>Category</label><input class="form-input" id="qa-link-cat" placeholder="e.g. Work, Dev…"></div>
+      </div>
+      <button class="btn-primary" style="width:100%" onclick="qaAddLink()">Save link</button>
+    </div>
+    <div id="qa-countdown-form" style="display:none">
+      <div class="form-group" style="margin-bottom:10px"><label>Name</label><input class="form-input" id="qa-cd-name" placeholder="e.g. Holiday to Bali"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div class="form-group"><label>Date</label><input class="form-input" type="date" id="qa-cd-date"></div>
+        <div class="form-group"><label>Category (optional)</label><input class="form-input" id="qa-cd-cat" placeholder="e.g. Travel"></div>
+      </div>
+      <button class="btn-primary" style="width:100%" onclick="qaAddCountdown()">Add countdown</button>
+    </div>
   </div>
 </div>
- 
+
 <!-- Toast -->
 <div class="toast" id="toast"><div class="toast-dot"></div><span id="toast-msg">Saved!</span></div>
 
+<script>
+// ═══════════════════════════════════════
+// DATA STORE
+// ═══════════════════════════════════════
+const STORE_KEY = 'brainfiles_v2';
+let data = {
+  user: { name: 'Heidi Ellis', initials: 'HE' },
+  expenses: [],
+  debts: [],
+  events: [],
+  tasks: [],
+  notes: [],
+  folders: [],
+  links: [],
+  savings: [],
+  countdowns: [],
+  nextId: 1
+};
 
-`
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+function load() {
+  try {
+    const s = localStorage.getItem(STORE_KEY);
+    if (s) data = JSON.parse(s);
+  } catch(e) {}
+}
+function nid() { return data.nextId++; }
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+let currentView = 'dashboard';
+let currentFolder = null;
+let dashCalDate = new Date();
+let dashCalSelected = new Date().toISOString().split('T')[0];
+
+function navigate(view, folderId) {
+  closeSidebar();
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view && !folderId));
+  document.querySelectorAll('.folder-item').forEach(f => f.classList.toggle('active', folderId && f.dataset.id == folderId));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+  if (folderId) {
+    currentFolder = data.folders.find(f => f.id == folderId);
+    document.getElementById('view-folder').classList.add('active');
+    document.getElementById('folder-view-title').textContent = currentFolder.name;
+    document.getElementById('page-title').textContent = currentFolder.name;
+    document.getElementById('page-date').textContent = 'Custom folder';
+    renderFolderNotes();
+    if (!currentFolderNoteId && currentFolder.notes.length) selectFolderNote(currentFolder.notes[0].id);
+    currentView = 'folder';
+  } else {
+    currentView = view;
+    document.getElementById(`view-${view}`).classList.add('active');
+    updateTopbar(view);
+    if (view === 'dashboard') renderDashboard();
+    if (view === 'expenses') renderExpenses();
+    if (view === 'calendar') renderCalendarFull();
+    if (view === 'tasks') renderTasks();
+    if (view === 'notes') { renderNotes(); if (!currentNoteId && data.notes.length) selectNote(data.notes[0].id); }
+    if (view === 'links') renderLinks();
+    if (view === 'countdowns') renderCountdowns();
+  }
+}
+
+function updateTopbar(view) {
+  const now = new Date();
+  const hour = now.getHours();
+  const greet = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+  const name = data.user.name.split(' ')[0];
+  const titles = {
+    dashboard: `Good ${greet}, ${name} 👋`,
+    expenses: 'Expenses',
+    calendar: 'Calendar',
+    tasks: 'Tasks',
+    notes: 'Notes',
+    links: 'Links',
+    countdowns: 'Countdowns'
+  };
+  document.getElementById('page-title').textContent = titles[view] || view;
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const d = new Date();
+  document.getElementById('page-date').textContent = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+  item.addEventListener('click', () => navigate(item.dataset.view));
+});
+
+// ═══════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════
+function renderDashboard() {
+  const today = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Stats
+  const totalExp = data.expenses.filter(e => e.amount < 0).reduce((s,e) => s + Math.abs(e.amount), 0);
+  const totalDebt = data.debts.reduce((s,d) => s + (d.total - d.paid), 0);
+  const totalSaved = (data.savings||[]).reduce((s,g) => s + g.saved, 0);
+  const tasksDone = data.tasks.filter(t => t.done).length;
+  const tasksTotal = data.tasks.length;
+  const eventsThisWeek = data.events.filter(e => {
+    const d = new Date(e.date);
+    const diff = (d - today) / 86400000;
+    return diff >= 0 && diff <= 7;
+  }).length;
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="slabel">Total expenses</div><div class="sval">R${totalExp.toLocaleString()}</div></div>
+    <div class="stat-card"><div class="slabel">Debt to pay off</div><div class="sval red">R${totalDebt.toLocaleString()}</div></div>
+    <div class="stat-card"><div class="slabel">Total saved</div><div class="sval green">R${totalSaved.toLocaleString()}</div></div>
+    <div class="stat-card"><div class="slabel">Events this week</div><div class="sval amber">${eventsThisWeek}</div></div>
+  `;
+
+  // Recent expenses
+  document.getElementById('dash-month').textContent = months[today.getMonth()];
+  const recent = [...data.expenses].sort((a,b) => new Date(b.date)-new Date(a.date)).slice(0,4);
+  document.getElementById('dash-expenses').innerHTML = recent.map(e => `
+    <div class="expense-row">
+      <div><div class="expense-name">${e.desc}</div><div class="expense-cat">${e.cat}</div></div>
+      <div class="expense-amt ${e.amount < 0 ? 'neg' : 'pos'}">${e.amount < 0 ? '-' : '+'}R${Math.abs(e.amount).toLocaleString()}</div>
+    </div>
+  `).join('');
+
+  // Mini calendar
+  renderMiniCal();
+
+  // Debts
+  document.getElementById('dash-debts').innerHTML = data.debts.slice(0,3).map(d => {
+    const pct = Math.round((d.paid / d.total) * 100);
+    const rem = d.total - d.paid;
+    return `
+      <div class="debt-item">
+        <div class="debt-top"><span class="debt-name">${d.name}</span><span class="debt-total">R${d.total.toLocaleString()}</span></div>
+        <div class="debt-bar"><div class="debt-fill" style="width:${pct}%"></div></div>
+        <div class="debt-meta"><span>R${d.paid.toLocaleString()} paid</span> · R${rem.toLocaleString()} remaining</div>
+      </div>
+    `;
+  }).join('') || '<div class="empty-state"><p>No debts tracked</p></div>';
+
+  // Savings goals
+  document.getElementById('dash-savings').innerHTML = (data.savings||[]).slice(0,3).map(s => {
+    const pct = s.target > 0 ? Math.round((s.saved / s.target) * 100) : 0;
+    return `
+      <div class="debt-item">
+        <div class="debt-top"><span class="debt-name">${s.name}</span><span class="debt-total">R${s.target.toLocaleString()}</span></div>
+        <div class="debt-bar"><div class="debt-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--green),var(--teal))"></div></div>
+        <div class="debt-meta"><span>R${s.saved.toLocaleString()} saved</span> · ${pct}% complete</div>
+      </div>`;
+  }).join('') || '<div class="empty-state"><p>No savings goals yet</p></div>';
+
+  // Tasks today
+  const todayTasks = data.tasks.slice(0,5);
+  document.getElementById('dash-tasks').innerHTML = todayTasks.map(t => `
+    <div class="task-item">
+      <div class="task-dot ${t.priority}"></div>
+      <span class="task-text ${t.done ? 'done' : ''}">${t.title}</span>
+    </div>
+  `).join('') || '<div class="empty-state"><p>No tasks</p></div>';
+
+  // Recent note
+  const note = data.notes[0];
+  document.getElementById('dash-note').innerHTML = note
+    ? `<div class="note-preview"><strong style="color:var(--text-primary)">${note.title}</strong><br>${note.body.slice(0, 140)}${note.body.length > 140 ? '…' : ''}</div>`
+    : '<div class="empty-state"><p>No notes yet</p></div>';
+
+  updateBadges();
+}
+
+function renderMiniCal() {
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('dash-cal-month').textContent = months[dashCalDate.getMonth()] + ' ' + dashCalDate.getFullYear();
+
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  const isCurrentMonth = dashCalDate.getMonth() === today.getMonth() && dashCalDate.getFullYear() === today.getFullYear();
+  const todayBtn = document.getElementById('dash-today-btn');
+  if (todayBtn) todayBtn.style.display = isCurrentMonth ? 'none' : '';
+
+  const labels = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const first = new Date(dashCalDate.getFullYear(), dashCalDate.getMonth(), 1).getDay();
+  const days = new Date(dashCalDate.getFullYear(), dashCalDate.getMonth() + 1, 0).getDate();
+
+  let html = labels.map(l => `<div class="cal-day-label">${l}</div>`).join('');
+  for (let i = 0; i < first; i++) html += `<div></div>`;
+
+  for (let d = 1; d <= days; d++) {
+    const dateStr = `${dashCalDate.getFullYear()}-${String(dashCalDate.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = dateStr === todayStr;
+    const isPast = dateStr < todayStr;
+    const isSelected = dateStr === dashCalSelected;
+    const dayEvents = getEventsForDate(dateStr);
+    const dots = dayEvents.slice(0,3).map(e => `<span class="cal-dot ${e.type}"></span>`).join('');
+
+    const cls = ['cal-day',
+      isToday ? 'today' : '',
+      isPast && !isToday && !isSelected ? 'past' : '',
+      isSelected && !isToday ? 'selected' : ''
+    ].filter(Boolean).join(' ');
+
+    html += `<div class="${cls}" onclick="dashCalSelect('${dateStr}')">
+      <span>${d}</span>
+      <div class="cal-dots">${dots}</div>
+    </div>`;
+  }
+
+  document.getElementById('dash-cal-grid').innerHTML = html;
+  renderDashCalEvents(dashCalSelected);
+}
+
+function dashCalSelect(dateStr) {
+  dashCalSelected = dateStr;
+  renderMiniCal();
+}
+
+function renderDashCalEvents(dateStr) {
+  const container = document.getElementById('dash-cal-events');
+  if (!container) return;
+  const events = getEventsForDate(dateStr);
+  const d = new Date(dateStr + 'T12:00');
+  const dayLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const monLabels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const heading = `${dayLabels[d.getDay()]} ${d.getDate()} ${monLabels[d.getMonth()]}`;
+
+  container.innerHTML = `<div style="border-top:1px solid rgba(255,255,255,0.05);margin-top:10px;padding-top:10px">
+    <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:6px;letter-spacing:0.3px;text-transform:uppercase">${heading}</div>
+    ${events.length
+      ? events.map(e => `<div class="dash-cal-event-row cal-event ${e.type}">
+          <span style="flex:1">${e.title}</span>
+          ${e.recur !== 'once' ? `<span style="font-size:10px;opacity:0.65">${e.recur}</span>` : ''}
+        </div>`).join('')
+      : `<div style="font-size:12px;color:var(--text-muted)">No events</div>`
+    }
+  </div>`;
+}
+
+function dashCalToday() {
+  dashCalDate = new Date();
+  dashCalSelected = new Date().toISOString().split('T')[0];
+  renderMiniCal();
+}
+
+function dashCalPrev() { dashCalDate.setMonth(dashCalDate.getMonth() - 1); renderMiniCal(); }
+function dashCalNext() { dashCalDate.setMonth(dashCalDate.getMonth() + 1); renderMiniCal(); }
+
+// ═══════════════════════════════════════
+// RECURRING LOGIC
+// ═══════════════════════════════════════
+function isRecurring(event, checkDate) {
+  if (event.recur === 'once') return false;
+  const orig = new Date(event.date);
+  const check = new Date(checkDate);
+  if (event.recur === 'weekly') {
+    return orig.getDay() === check.getDay() && check >= orig;
+  }
+  if (event.recur === 'monthly') {
+    return orig.getDate() === check.getDate() && check >= orig;
+  }
+  if (event.recur === 'yearly') {
+    return orig.getMonth() === check.getMonth() && orig.getDate() === check.getDate() && check >= orig;
+  }
+  return false;
+}
+
+function getEventsForDate(dateStr) {
+  return data.events.filter(e => e.date === dateStr || (e.recur !== 'once' && isRecurring(e, dateStr)));
+}
+
+// ═══════════════════════════════════════
+// EXPENSES
+// ═══════════════════════════════════════
+let currentExpTab = 'transactions';
+
+function switchExpTab(el, tab) {
+  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('exp-transactions').style.display = tab === 'transactions' ? '' : 'none';
+  document.getElementById('exp-debt').style.display = tab === 'debt' ? '' : 'none';
+  document.getElementById('exp-savings').style.display = tab === 'savings' ? '' : 'none';
+  document.getElementById('exp-summary').style.display = tab === 'summary' ? '' : 'none';
+  currentExpTab = tab;
+  if (tab === 'summary') renderExpSummary();
+  if (tab === 'savings') renderSavings();
+}
+
+function renderExpenses() {
+  const tbody = document.getElementById('expense-tbody');
+  tbody.innerHTML = [...data.expenses].reverse().map(e => `
+    <tr>
+      <td style="color:var(--text-muted)">${e.date}</td>
+      <td>${e.desc}</td>
+      <td><span class="cat-pill">${e.cat}</span></td>
+      <td style="text-align:right;font-family:'DM Mono',monospace" class="${e.amount < 0 ? 'expense-amt neg' : 'expense-amt pos'}">${e.amount < 0 ? '-' : '+'}R${Math.abs(e.amount).toLocaleString()}</td>
+      <td><button style="background:none;color:var(--text-muted);font-size:16px;padding:0 4px;transition:color 0.15s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-muted)'" onclick="deleteExpense(${e.id})">×</button></td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-muted)">No expenses yet</td></tr>';
+  renderDebtList();
+  updateBadges();
+}
+
+function addExpense() {
+  const desc = document.getElementById('exp-desc').value.trim();
+  const amount = parseFloat(document.getElementById('exp-amount').value);
+  const cat = document.getElementById('exp-cat').value;
+  if (!desc || isNaN(amount)) return;
+  const isIncome = cat === 'Income';
+  data.expenses.push({ id: nid(), desc, cat, amount: isIncome ? Math.abs(amount) : -Math.abs(amount), date: new Date().toISOString().split('T')[0] });
+  document.getElementById('exp-desc').value = '';
+  document.getElementById('exp-amount').value = '';
+  save(); renderExpenses(); renderDashboard(); showToast('Expense added');
+}
+
+function deleteExpense(id) {
+  data.expenses = data.expenses.filter(e => e.id !== id);
+  save(); renderExpenses();
+}
+
+function renderDebtList() {
+  document.getElementById('debt-list').innerHTML = data.debts.map(d => {
+    const pct = Math.min(100, Math.round((d.paid / d.total) * 100));
+    const rem = d.total - d.paid;
+    return `
+      <div class="debt-card-full">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between">
+          <div><div style="font-size:14px;font-weight:600">${d.name}</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px">R${d.total.toLocaleString()} total</div></div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="debt-pay-btn" onclick="openPayModal(${d.id})">Make payment</button>
+            <button style="background:none;color:var(--text-muted);font-size:18px;padding:0 4px" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-muted)'" onclick="deleteDebt(${d.id})">×</button>
+          </div>
+        </div>
+        <div class="debt-bar-full"><div class="debt-fill-full" style="width:${pct}%"></div></div>
+        <div class="debt-stats">
+          <div class="debt-stat">Paid: <strong>R${d.paid.toLocaleString()}</strong></div>
+          <div class="debt-stat">Remaining: <strong style="color:var(--red)">R${rem.toLocaleString()}</strong></div>
+          <div class="debt-stat">Progress: <strong style="color:var(--green)">${pct}%</strong></div>
+        </div>
+      </div>
+    `;
+  }).join('') || '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg><p>No debts tracked. Add one above.</p></div>';
+}
+
+function addDebt() {
+  const name = document.getElementById('debt-name').value.trim();
+  const total = parseFloat(document.getElementById('debt-total').value);
+  const paid = parseFloat(document.getElementById('debt-paid').value) || 0;
+  if (!name || isNaN(total)) return;
+  data.debts.push({ id: nid(), name, total, paid });
+  document.getElementById('debt-name').value = '';
+  document.getElementById('debt-total').value = '';
+  document.getElementById('debt-paid').value = '';
+  save(); renderDebtList(); renderDashboard(); showToast('Debt added');
+}
+
+function deleteDebt(id) {
+  data.debts = data.debts.filter(d => d.id !== id);
+  save(); renderDebtList(); renderDashboard();
+}
+
+let payingDebtId = null;
+function openPayModal(id) {
+  payingDebtId = id;
+  document.getElementById('pay-amount').value = '';
+  document.getElementById('pay-modal').classList.add('open');
+}
+function submitPayment() {
+  const amt = parseFloat(document.getElementById('pay-amount').value);
+  if (isNaN(amt) || amt <= 0) return;
+  const debt = data.debts.find(d => d.id === payingDebtId);
+  if (debt) { debt.paid = Math.min(debt.total, debt.paid + amt); }
+  save(); closeModal('pay-modal'); renderDebtList(); renderDashboard(); showToast('Payment recorded!');
+}
+
+function renderExpSummary() {
+  const income = data.expenses.filter(e => e.amount > 0).reduce((s,e) => s+e.amount, 0);
+  const spent = data.expenses.filter(e => e.amount < 0).reduce((s,e) => s+Math.abs(e.amount), 0);
+  const net = income - spent;
+  document.getElementById('exp-summary-stats').innerHTML = `
+    <div class="stat-card"><div class="slabel">Total income</div><div class="sval green">R${income.toLocaleString()}</div></div>
+    <div class="stat-card"><div class="slabel">Total spent</div><div class="sval red">R${spent.toLocaleString()}</div></div>
+    <div class="stat-card"><div class="slabel">Net balance</div><div class="sval ${net >= 0 ? 'green' : 'red'}">R${net.toLocaleString()}</div></div>
+  `;
+  const cats = {};
+  data.expenses.filter(e => e.amount < 0).forEach(e => { cats[e.cat] = (cats[e.cat] || 0) + Math.abs(e.amount); });
+  document.getElementById('exp-cat-breakdown').innerHTML = Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat, amt]) => {
+    const pct = spent ? Math.round((amt/spent)*100) : 0;
+    return `
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:13px">
+          <span>${cat}</span><span style="color:var(--text-muted);font-family:'DM Mono',monospace">R${amt.toLocaleString()} (${pct}%)</span>
+        </div>
+        <div class="debt-bar"><div class="debt-fill" style="width:${pct}%;background:var(--accent)"></div></div>
+      </div>
+    `;
+  }).join('') || '<div class="empty-state"><p>No spending data</p></div>';
+}
+
+// ═══════════════════════════════════════
+// CALENDAR
+// ═══════════════════════════════════════
+let calDate = new Date();
+let selectedEventId = null;
+
+function renderCalendarFull() {
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-full-title').textContent = `${months[calDate.getMonth()]} ${calDate.getFullYear()}`;
+  const labels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const first = new Date(calDate.getFullYear(), calDate.getMonth(), 1).getDay();
+  const days = new Date(calDate.getFullYear(), calDate.getMonth() + 1, 0).getDate();
+  const prevDays = new Date(calDate.getFullYear(), calDate.getMonth(), 0).getDate();
+  const today = new Date();
+
+  let html = labels.map(l => `<div class="cal-full-day-label">${l}</div>`).join('');
+
+  for (let i = 0; i < first; i++) {
+    const d = prevDays - first + 1 + i;
+    html += `<div class="cal-full-day other-month"><div class="day-num">${d}</div></div>`;
+  }
+
+  for (let d = 1; d <= days; d++) {
+    const isToday = d === today.getDate() && calDate.getMonth() === today.getMonth() && calDate.getFullYear() === today.getFullYear();
+    const dateStr = `${calDate.getFullYear()}-${String(calDate.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayEvents = getEventsForDate(dateStr).slice(0,3);
+    html += `
+      <div class="cal-full-day${isToday?' today':''}" onclick="calDayClick('${dateStr}')">
+        <div class="day-num">${d}</div>
+        ${dayEvents.map(e => `
+          <div class="cal-event ${e.type}" title="${e.title}${e.recur !== 'once' ? ' ('+e.recur+')' : ''}">
+            ${e.title}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  const totalCells = first + days;
+  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let i = 1; i <= remaining; i++) {
+    html += `<div class="cal-full-day other-month"><div class="day-num">${i}</div></div>`;
+  }
+
+  document.getElementById('cal-full-grid').innerHTML = html;
+  renderUpcomingEvents();
+}
+
+function calDayClick(dateStr) {
+  document.getElementById('ev-date').value = dateStr;
+  document.getElementById('ev-title').focus();
+}
+
+function calFullPrev() { calDate.setMonth(calDate.getMonth() - 1); renderCalendarFull(); }
+function calFullNext() { calDate.setMonth(calDate.getMonth() + 1); renderCalendarFull(); }
+function calFullToday() { calDate = new Date(); renderCalendarFull(); }
+
+function addEvent() {
+  const title = document.getElementById('ev-title').value.trim();
+  const date = document.getElementById('ev-date').value;
+  const type = document.getElementById('ev-type').value;
+  const recur = document.getElementById('ev-recur').value;
+  if (!title || !date) return;
+  data.events.push({ id: nid(), title, date, type, recur });
+  document.getElementById('ev-title').value = '';
+  save(); renderCalendarFull(); renderDashboard(); showToast('Event added');
+}
+
+function renderUpcomingEvents() {
+  const today = new Date();
+  const upcoming = [];
+  for (let i = 0; i <= 30; i++) {
+    const d = new Date(today); d.setDate(today.getDate() + i);
+    const dateStr = d.toISOString().split('T')[0];
+    getEventsForDate(dateStr).forEach(e => { if (upcoming.length < 8) upcoming.push({...e, displayDate: dateStr}); });
+  }
+  const recurBadge = r => r !== 'once' ? `<span class="recur-badge ${r}">${r}</span>` : '';
+  document.getElementById('upcoming-events').innerHTML = upcoming.map(e => `
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer" onclick="showEventDetail(${e.id})">
+      <div style="width:36px;text-align:center;flex-shrink:0">
+        <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase">${new Date(e.displayDate+'T12:00').toLocaleDateString('en',{month:'short'})}</div>
+        <div style="font-size:16px;font-weight:600;color:var(--text-primary)">${new Date(e.displayDate+'T12:00').getDate()}</div>
+      </div>
+      <div class="cal-event ${e.type}" style="flex:1;white-space:normal;padding:6px 10px;border-radius:6px">${e.title}</div>
+      ${recurBadge(e.recur)}
+    </div>
+  `).join('') || '<div style="color:var(--text-muted);font-size:13px;padding:16px 0">No upcoming events</div>';
+}
+
+function showEventDetail(id) {
+  const e = data.events.find(ev => ev.id === id);
+  if (!e) return;
+  selectedEventId = id;
+  document.getElementById('event-modal-title').textContent = e.title;
+  document.getElementById('event-modal-body').innerHTML = `
+    <div>📅 Date: <strong>${e.date}</strong></div>
+    <div>🔖 Type: <strong>${e.type}</strong></div>
+    <div>🔁 Recurrence: <strong>${e.recur}</strong></div>
+  `;
+  document.getElementById('event-modal').classList.add('open');
+}
+
+function deleteEventModal() {
+  data.events = data.events.filter(e => e.id !== selectedEventId);
+  save(); closeModal('event-modal'); renderCalendarFull();
+}
+
+// ═══════════════════════════════════════
+// TASKS
+// ═══════════════════════════════════════
+let taskFilter = 'all';
+
+function renderTasks() {
+  let filtered = data.tasks;
+  if (taskFilter === 'done') filtered = data.tasks.filter(t => t.done);
+  else if (taskFilter !== 'all') filtered = data.tasks.filter(t => t.priority === taskFilter && !t.done);
+
+  document.getElementById('tasks-list').innerHTML = filtered.map(t => `
+    <div class="task-card-full ${t.done ? 'done-card' : ''}">
+      <div class="checkbox-big ${t.done ? 'checked' : ''}" onclick="toggleTask(${t.id})"></div>
+      <div class="priority-dot ${t.priority}"></div>
+      <div class="task-info">
+        <div class="task-title-full ${t.done ? 'done' : ''}">${t.title}</div>
+        <div class="task-meta">${t.priority} priority${t.due ? ' · Due ' + t.due : ''}</div>
+      </div>
+      <button class="task-del" onclick="deleteTask(${t.id})">×</button>
+    </div>
+  `).join('') || '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><p>No tasks here</p></div>';
+  updateBadges();
+}
+
+function addTask() {
+  const title = document.getElementById('task-input').value.trim();
+  const priority = document.getElementById('task-priority').value;
+  const due = document.getElementById('task-due').value;
+  if (!title) return;
+  data.tasks.unshift({ id: nid(), title, priority, due, done: false });
+  document.getElementById('task-input').value = '';
+  save(); renderTasks(); renderDashboard(); showToast('Task added');
+}
+
+function toggleTask(id) {
+  const t = data.tasks.find(t => t.id === id);
+  if (t) t.done = !t.done;
+  save(); renderTasks(); renderDashboard();
+}
+
+function deleteTask(id) {
+  data.tasks = data.tasks.filter(t => t.id !== id);
+  save(); renderTasks();
+}
+
+document.getElementById('task-filters').addEventListener('click', e => {
+  const chip = e.target.closest('.filter-chip');
+  if (!chip) return;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  taskFilter = chip.dataset.filter;
+  renderTasks();
+});
+
+// ═══════════════════════════════════════
+// ATTACHMENTS
+// ═══════════════════════════════════════
+let _adb = null;
+function adb() {
+  return new Promise((res, rej) => {
+    if (_adb) { res(_adb); return; }
+    const req = indexedDB.open('brainfiles_files', 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore('files', { keyPath: 'id' });
+    req.onsuccess = e => { _adb = e.target.result; res(_adb); };
+    req.onerror = rej;
+  });
+}
+function attachSave(id, blob) {
+  return adb().then(db => new Promise((res, rej) => {
+    const tx = db.transaction('files', 'readwrite');
+    tx.objectStore('files').put({ id, blob });
+    tx.oncomplete = res; tx.onerror = rej;
+  }));
+}
+function attachGet(id) {
+  return adb().then(db => new Promise((res, rej) => {
+    const req = db.transaction('files').objectStore('files').get(id);
+    req.onsuccess = e => res(e.target.result?.blob);
+    req.onerror = rej;
+  }));
+}
+function attachDel(id) {
+  return adb().then(db => new Promise((res, rej) => {
+    const tx = db.transaction('files', 'readwrite');
+    tx.objectStore('files').delete(id);
+    tx.oncomplete = res; tx.onerror = rej;
+  }));
+}
+
+function fmtSize(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
+}
+function fileIcon(type) {
+  if (type.startsWith('image/')) return '🖼';
+  if (type === 'application/pdf') return '📄';
+  if (type.includes('word') || type.includes('document')) return '📝';
+  if (type.includes('sheet') || type.includes('excel') || type.includes('csv')) return '📊';
+  if (type.includes('presentation') || type.includes('powerpoint')) return '📑';
+  if (type.includes('zip') || type.includes('rar') || type.includes('7z')) return '🗜';
+  if (type.startsWith('video/')) return '🎬';
+  if (type.startsWith('audio/')) return '🎵';
+  if (type.startsWith('text/')) return '📃';
+  return '📎';
+}
+
+function findNoteById(id) {
+  let note = data.notes.find(n => n.id == id);
+  if (!note) data.folders.forEach(f => { const n = f.notes.find(n => n.id == id); if (n) note = n; });
+  return note;
+}
+
+function handleFileDrop(files, note, containerId) {
+  if (!note || !files.length) return;
+  if (!note.attachments) note.attachments = [];
+  const promises = [...files].map(file => {
+    const id = 'att_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    return attachSave(id, file).then(() => {
+      note.attachments.push({ id, name: file.name, type: file.type, size: file.size });
+    });
+  });
+  Promise.all(promises).then(() => {
+    save();
+    renderAttachments(note, containerId);
+    showToast(files.length === 1 ? '1 file attached' : files.length + ' files attached');
+  });
+}
+
+function renderAttachments(note, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const atts = note?.attachments || [];
+  if (!atts.length) { container.innerHTML = ''; return; }
+  container.innerHTML = atts.map(a => {
+    if (a.type.startsWith('image/')) {
+      return `<div class="attach-img-wrap">
+        <img class="attach-img" data-id="${a.id}" src="" alt="${a.name}" title="${a.name}" onclick="openAttachment('${a.id}')">
+        <button class="attach-btn rm attach-corner" title="Remove" onclick="deleteAttachment('${a.id}',${note.id},'${containerId}')">×</button>
+      </div>`;
+    }
+    return `<div class="attach-chip">
+      <span style="font-size:16px;flex-shrink:0">${fileIcon(a.type)}</span>
+      <span class="attach-chip-name" title="${a.name}">${a.name}</span>
+      <span class="attach-chip-size">${fmtSize(a.size)}</span>
+      <button class="attach-btn op" title="Open" onclick="openAttachment('${a.id}')">↗</button>
+      <button class="attach-btn dl" title="Download" onclick="downloadAttachment('${a.id}','${a.name}')">↓</button>
+      <button class="attach-btn rm" title="Remove" onclick="deleteAttachment('${a.id}',${note.id},'${containerId}')">×</button>
+    </div>`;
+  }).join('');
+  atts.filter(a => a.type.startsWith('image/')).forEach(a => {
+    attachGet(a.id).then(blob => {
+      if (!blob) return;
+      const img = container.querySelector(`img[data-id="${a.id}"]`);
+      if (img) { const url = URL.createObjectURL(blob); img.src = url; img.onload = () => {}; }
+    });
+  });
+}
+
+function openAttachment(id) {
+  attachGet(id).then(blob => { if (blob) window.open(URL.createObjectURL(blob), '_blank'); });
+}
+function downloadAttachment(id, name) {
+  attachGet(id).then(blob => {
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+}
+function deleteAttachment(attId, noteId, containerId) {
+  const note = findNoteById(noteId);
+  if (!note) return;
+  note.attachments = (note.attachments || []).filter(a => a.id !== attId);
+  attachDel(attId);
+  save();
+  renderAttachments(note, containerId);
+}
+
+// ═══════════════════════════════════════
+// NOTES
+// ═══════════════════════════════════════
+let currentNoteId = null;
+
+function renderNotes() {
+  const list = document.getElementById('notes-list');
+  list.innerHTML = data.notes.map(n => `
+    <div class="note-list-item ${n.id === currentNoteId ? 'active' : ''}" onclick="selectNote(${n.id})">
+      <div class="note-list-title">${n.title || 'Untitled'}</div>
+      <div class="note-list-preview">${n.body || 'Empty note'}</div>
+      <div class="note-list-date">${new Date(n.updated).toLocaleDateString()}</div>
+    </div>
+  `).join('') || '<div style="padding:16px;color:var(--text-muted);font-size:13px;text-align:center">No notes yet</div>';
+
+  if (currentNoteId) {
+    const n = data.notes.find(n => n.id === currentNoteId);
+    if (n) {
+      document.getElementById('note-title').value = n.title;
+      document.getElementById('note-body').value = n.body;
+      renderAttachments(n, 'note-attachments');
+    }
+  }
+}
+
+function selectNote(id) {
+  currentNoteId = id;
+  const n = data.notes.find(n => n.id === id);
+  document.getElementById('note-title').value = n.title;
+  document.getElementById('note-body').value = n.body;
+  renderAttachments(n, 'note-attachments');
+  renderNotes();
+}
+
+function newNote() {
+  const n = { id: nid(), title: '', body: '', updated: Date.now() };
+  data.notes.unshift(n);
+  currentNoteId = n.id;
+  save(); renderNotes();
+  document.getElementById('note-title').focus();
+}
+
+function saveCurrentNote() {
+  if (!currentNoteId) return;
+  const n = data.notes.find(n => n.id === currentNoteId);
+  if (!n) return;
+  n.title = document.getElementById('note-title').value;
+  n.body = document.getElementById('note-body').value;
+  n.updated = Date.now();
+  document.getElementById('note-saved-status').textContent = 'Saved ✓';
+  setTimeout(() => document.getElementById('note-saved-status').textContent = 'Auto-saved', 1500);
+  save();
+}
+
+function deleteCurrentNote() {
+  if (!currentNoteId) return;
+  const note = data.notes.find(n => n.id === currentNoteId);
+  if (note?.attachments) note.attachments.forEach(a => attachDel(a.id));
+  data.notes = data.notes.filter(n => n.id !== currentNoteId);
+  currentNoteId = null;
+  document.getElementById('note-title').value = '';
+  document.getElementById('note-body').value = '';
+  document.getElementById('note-attachments').innerHTML = '';
+  save(); renderNotes();
+}
+
+// ═══════════════════════════════════════
+// CUSTOM FOLDERS
+// ═══════════════════════════════════════
+let currentFolderNoteId = null;
+
+function renderFolders() {
+  document.getElementById('custom-folders').innerHTML = data.folders.map(f => `
+    <div class="folder-item ${currentFolder && currentFolder.id === f.id ? 'active' : ''}" data-id="${f.id}" onclick="navigate('folder',${f.id})">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+      <span class="fname">${f.name}</span>
+      <button class="fdel" onclick="event.stopPropagation();deleteFolder(${f.id})">×</button>
+    </div>
+  `).join('');
+}
+
+function createFolder() {
+  const name = document.getElementById('new-folder-name').value.trim();
+  if (!name) return;
+  data.folders.push({ id: nid(), name, notes: [] });
+  document.getElementById('new-folder-name').value = '';
+  document.getElementById('folder-input').style.display = 'none';
+  save(); renderFolders(); showToast('Folder created');
+}
+
+function deleteFolder(id) {
+  data.folders = data.folders.filter(f => f.id !== id);
+  save(); renderFolders();
+  if (currentView === 'folder') navigate('dashboard');
+}
+
+document.getElementById('add-folder-btn').addEventListener('click', () => {
+  const input = document.getElementById('folder-input');
+  input.style.display = input.style.display === 'none' ? 'flex' : 'none';
+  if (input.style.display === 'flex') document.getElementById('new-folder-name').focus();
+});
+
+document.getElementById('new-folder-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') createFolder();
+});
+
+function renderFolderNotes() {
+  if (!currentFolder) return;
+  const list = document.getElementById('folder-notes-list');
+  list.innerHTML = currentFolder.notes.map(n => `
+    <div class="note-list-item ${n.id === currentFolderNoteId ? 'active' : ''}" onclick="selectFolderNote(${n.id})">
+      <div class="note-list-title">${n.title || 'Untitled'}</div>
+      <div class="note-list-preview">${n.body || 'Empty note'}</div>
+      <div class="note-list-date">${new Date(n.updated).toLocaleDateString()}</div>
+    </div>
+  `).join('') || '<div style="padding:16px;color:var(--text-muted);font-size:13px;text-align:center">No notes yet</div>';
+  if (currentFolderNoteId) {
+    const n = currentFolder.notes.find(n => n.id === currentFolderNoteId);
+    if (n) {
+      document.getElementById('folder-note-title').value = n.title;
+      document.getElementById('folder-note-body').value = n.body;
+      renderAttachments(n, 'folder-note-attachments');
+    }
+  } else {
+    document.getElementById('folder-note-title').value = '';
+    document.getElementById('folder-note-body').value = '';
+  }
+}
+
+function selectFolderNote(id) {
+  currentFolderNoteId = id;
+  const n = currentFolder.notes.find(n => n.id === id);
+  document.getElementById('folder-note-title').value = n.title;
+  document.getElementById('folder-note-body').value = n.body;
+  renderAttachments(n, 'folder-note-attachments');
+  renderFolderNotes();
+}
+
+function newFolderNote() {
+  if (!currentFolder) return;
+  const n = { id: nid(), title: '', body: '', updated: Date.now() };
+  currentFolder.notes.unshift(n);
+  currentFolderNoteId = n.id;
+  save(); renderFolderNotes();
+  document.getElementById('folder-note-title').focus();
+}
+
+function saveFolderNote() {
+  if (!currentFolderNoteId || !currentFolder) return;
+  const n = currentFolder.notes.find(n => n.id === currentFolderNoteId);
+  if (!n) return;
+  n.title = document.getElementById('folder-note-title').value;
+  n.body = document.getElementById('folder-note-body').value;
+  n.updated = Date.now();
+  document.getElementById('folder-note-status').textContent = 'Saved ✓';
+  save();
+}
+
+function deleteFolderNote() {
+  if (!currentFolderNoteId || !currentFolder) return;
+  const note = currentFolder.notes.find(n => n.id === currentFolderNoteId);
+  if (note?.attachments) note.attachments.forEach(a => attachDel(a.id));
+  currentFolder.notes = currentFolder.notes.filter(n => n.id !== currentFolderNoteId);
+  currentFolderNoteId = null;
+  document.getElementById('folder-note-attachments').innerHTML = '';
+  save(); renderFolderNotes();
+}
+
+// ═══════════════════════════════════════
+// SAVINGS
+// ═══════════════════════════════════════
+function renderSavings() {
+  document.getElementById('savings-list').innerHTML = (data.savings||[]).map(s => {
+    const pct = s.target > 0 ? Math.min(100, Math.round((s.saved / s.target) * 100)) : 0;
+    const rem = Math.max(0, s.target - s.saved);
+    return `
+      <div class="debt-card-full">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between">
+          <div>
+            <div style="font-size:14px;font-weight:600">${s.name}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Target: R${s.target.toLocaleString()}</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="sav-deposit-btn" onclick="openSavingsModal(${s.id})">+ Add funds</button>
+            <button style="background:none;color:var(--text-muted);font-size:18px;padding:0 4px;transition:color 0.15s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-muted)'" onclick="deleteSavingsGoal(${s.id})">×</button>
+          </div>
+        </div>
+        <div class="sav-bar-full"><div class="sav-fill" style="width:${pct}%"></div></div>
+        <div class="debt-stats">
+          <div class="debt-stat">Saved: <strong style="color:var(--green)">R${s.saved.toLocaleString()}</strong></div>
+          <div class="debt-stat">Remaining: <strong>R${rem.toLocaleString()}</strong></div>
+          <div class="debt-stat">Progress: <strong style="color:var(--green)">${pct}%</strong></div>
+        </div>
+      </div>`;
+  }).join('') || '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9 9h6M9 12h6M9 15h4"/></svg><p>No savings goals yet. Add one above.</p></div>';
+}
+
+function addSavingsGoal() {
+  const name = document.getElementById('sav-name').value.trim();
+  const target = parseFloat(document.getElementById('sav-target').value);
+  const saved = parseFloat(document.getElementById('sav-saved').value) || 0;
+  if (!name || isNaN(target) || target <= 0) return;
+  (data.savings = data.savings||[]).push({ id: nid(), name, target, saved });
+  document.getElementById('sav-name').value = '';
+  document.getElementById('sav-target').value = '';
+  document.getElementById('sav-saved').value = '';
+  save(); renderSavings(); renderDashboard(); showToast('Savings goal added');
+}
+
+function deleteSavingsGoal(id) {
+  data.savings = (data.savings||[]).filter(s => s.id !== id);
+  save(); renderSavings(); renderDashboard();
+}
+
+let savingsGoalId = null;
+function openSavingsModal(id) {
+  savingsGoalId = id;
+  const goal = (data.savings||[]).find(s => s.id === id);
+  document.getElementById('savings-modal-title').textContent = goal ? `Add to — ${goal.name}` : 'Add funds';
+  document.getElementById('sav-deposit').value = '';
+  document.getElementById('savings-modal').classList.add('open');
+}
+
+function submitSavingsDeposit() {
+  const amt = parseFloat(document.getElementById('sav-deposit').value);
+  if (isNaN(amt) || amt <= 0) return;
+  const goal = (data.savings||[]).find(s => s.id === savingsGoalId);
+  if (goal) goal.saved = Math.min(goal.target, goal.saved + amt);
+  save(); closeModal('savings-modal'); renderSavings(); renderDashboard(); showToast('Funds added!');
+}
+
+// ═══════════════════════════════════════
+// COUNTDOWNS
+// ═══════════════════════════════════════
+function daysUntil(dateStr) {
+  const target = new Date(dateStr); target.setHours(0,0,0,0);
+  const now = new Date(); now.setHours(0,0,0,0);
+  return Math.round((target - now) / 86400000);
+}
+
+function renderCountdowns() {
+  const list = [...(data.countdowns||[])].sort((a,b) => new Date(a.date) - new Date(b.date));
+  if (!list.length) {
+    document.getElementById('countdowns-grid').innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><p>No countdowns yet. Add one above.</p></div>';
+    return;
+  }
+  document.getElementById('countdowns-grid').innerHTML = `<div class="countdown-grid">${list.map(c => {
+    const days = daysUntil(c.date);
+    const colorClass = days < 0 ? 'past' : days === 0 ? 'today' : days <= 7 ? 'urgent' : days <= 30 ? 'soon' : 'future';
+    const barColor = days < 0 ? 'var(--text-muted)' : days <= 7 ? 'var(--red)' : days <= 30 ? 'var(--amber)' : 'var(--green)';
+    const unitLabel = days < 0 ? `day${Math.abs(days)===1?'':'s'} ago` : days === 0 ? '🎉 today!' : `day${days===1?'':'s'} to go`;
+    const created = new Date(c.created); created.setHours(0,0,0,0);
+    const target = new Date(c.date); target.setHours(0,0,0,0);
+    const total = target - created;
+    const elapsed = new Date().setHours(0,0,0,0) - created;
+    const pct = total > 0 ? Math.min(100, Math.max(0, Math.round((elapsed/total)*100))) : 100;
+    const dateDisplay = new Date(c.date+'T12:00').toLocaleDateString('en',{day:'numeric',month:'short',year:'numeric'});
+    return `<div class="countdown-card">
+      <button class="countdown-del" onclick="deleteCountdown(${c.id})">×</button>
+      <div class="countdown-days ${colorClass}">${Math.abs(days)}</div>
+      <div class="countdown-unit">${unitLabel}</div>
+      <div class="countdown-name">${c.name}</div>
+      <div class="countdown-date">${dateDisplay}</div>
+      ${c.category ? `<span class="cat-pill" style="margin-top:8px">${c.category}</span>` : ''}
+      <div class="countdown-bar-wrap"><div class="countdown-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function addCountdown() {
+  const name = document.getElementById('cd-name').value.trim();
+  const date = document.getElementById('cd-date').value;
+  const category = document.getElementById('cd-cat').value.trim();
+  if (!name || !date) return;
+  (data.countdowns = data.countdowns||[]).push({ id: nid(), name, date, category, created: new Date().toISOString().split('T')[0] });
+  document.getElementById('cd-name').value = '';
+  document.getElementById('cd-date').value = '';
+  document.getElementById('cd-cat').value = '';
+  save(); renderCountdowns(); showToast('Countdown added');
+}
+
+function deleteCountdown(id) {
+  data.countdowns = (data.countdowns||[]).filter(c => c.id !== id);
+  save(); renderCountdowns();
+}
+
+// ═══════════════════════════════════════
+// LINKS
+// ═══════════════════════════════════════
+let linkCatFilter = 'all';
+
+function getDomain(url) {
+  try { return new URL(url).hostname.replace('www.',''); } catch { return url; }
+}
+
+function renderLinks() {
+  const cats = [...new Set((data.links||[]).map(l => l.category).filter(Boolean))];
+  const filterEl = document.getElementById('link-filters');
+  filterEl.innerHTML = [
+    `<div class="filter-chip ${linkCatFilter==='all'?'active':''}" data-cat="all">All</div>`,
+    ...cats.map(c => `<div class="filter-chip ${linkCatFilter===c?'active':''}" data-cat="${c}">${c}</div>`)
+  ].join('');
+  filterEl.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => { linkCatFilter = chip.dataset.cat; renderLinks(); });
+  });
+
+  const filtered = linkCatFilter === 'all'
+    ? (data.links||[])
+    : (data.links||[]).filter(l => l.category === linkCatFilter);
+
+  document.getElementById('links-grid').innerHTML = filtered.length
+    ? `<div class="link-grid">${filtered.map(l => {
+        const domain = getDomain(l.url);
+        const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+        return `<div class="link-card">
+          <div class="link-card-top">
+            <img class="link-favicon" src="${faviconUrl}" alt="" onerror="this.outerHTML='<div class=\\'link-favicon-fallback\\'><svg width=\\'12\\' height=\\'12\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'var(--accent-light)\\' stroke-width=\\'2\\'><path d=\\'M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71\\'/>< path d=\\'M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71\\'/></svg></div>'">
+            <div class="link-info">
+              <div class="link-title-text" title="${l.title}">${l.title}</div>
+              <div class="link-domain">${domain}</div>
+            </div>
+          </div>
+          <div class="link-card-bottom">
+            ${l.category ? `<span class="cat-pill">${l.category}</span>` : ''}
+            <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+              <button class="link-open-btn" onclick="window.open('${l.url.replace(/'/g,"\\'")}','_blank')">Open ↗</button>
+              <button class="link-del-btn" title="Delete" onclick="deleteLink(${l.id})">×</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}</div>`
+    : `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg><p>No links saved yet</p></div>`;
+
+  updateBadges();
+}
+
+function addLink() {
+  let url = document.getElementById('link-url').value.trim();
+  if (!url) return;
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  const title = document.getElementById('link-title').value.trim() || getDomain(url);
+  const category = document.getElementById('link-cat').value.trim();
+  (data.links = data.links||[]).unshift({ id: nid(), title, url, category, date: new Date().toISOString().split('T')[0] });
+  document.getElementById('link-url').value = '';
+  document.getElementById('link-title').value = '';
+  document.getElementById('link-cat').value = '';
+  save(); renderLinks(); showToast('Link saved');
+}
+
+function deleteLink(id) {
+  data.links = (data.links||[]).filter(l => l.id !== id);
+  save(); renderLinks();
+}
+
+// ═══════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════
+function openSearch() {
+  document.getElementById('search-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('search-input').focus(), 100);
+}
+function closeSearch(e) {
+  if (!e || e.target === document.getElementById('search-overlay')) {
+    document.getElementById('search-overlay').classList.remove('open');
+    document.getElementById('search-input').value = '';
+    document.getElementById('search-results').innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px">Start typing to search…</div>';
+  }
+}
+
+function doSearch(q) {
+  if (!q.trim()) { document.getElementById('search-results').innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px">Start typing to search…</div>'; return; }
+  const ql = q.toLowerCase();
+  const results = [];
+  data.tasks.filter(t => t.title.toLowerCase().includes(ql)).forEach(t => results.push({ type:'Task', title:t.title }));
+  data.expenses.filter(e => e.desc.toLowerCase().includes(ql)).forEach(e => results.push({ type:'Expense', title:`${e.desc} — R${Math.abs(e.amount)}` }));
+  data.notes.filter(n => n.title.toLowerCase().includes(ql) || n.body.toLowerCase().includes(ql)).forEach(n => results.push({ type:'Note', title:n.title || 'Untitled' }));
+  data.events.filter(e => e.title.toLowerCase().includes(ql)).forEach(e => results.push({ type:'Event', title:`${e.title} — ${e.date}` }));
+  (data.links||[]).filter(l => l.title.toLowerCase().includes(ql) || l.url.toLowerCase().includes(ql)).forEach(l => results.push({ type:'Link', title:`${l.title} — ${getDomain(l.url)}` }));
+  data.folders.forEach(f => { f.notes.filter(n => n.title.toLowerCase().includes(ql) || n.body.toLowerCase().includes(ql)).forEach(n => results.push({ type:`${f.name}`, title:n.title || 'Untitled' })); });
+
+  document.getElementById('search-results').innerHTML = results.length
+    ? results.map(r => `<div class="search-result-item"><div class="sr-type">${r.type}</div><div class="sr-title">${r.title}</div></div>`).join('')
+    : '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px">No results found</div>';
+}
+
+// ═══════════════════════════════════════
+// QUICK ADD
+// ═══════════════════════════════════════
+function openQuickAdd() {
+  document.getElementById('qa-overlay').classList.add('open');
+  const sel = document.getElementById('qa-note-folder');
+  sel.innerHTML = '<option value="">Notes (default)</option>' +
+    data.folders.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+}
+function closeQuickAdd(e) { if (!e || e.target === document.getElementById('qa-overlay')) document.getElementById('qa-overlay').classList.remove('open'); }
+
+function qaSwitch(el, tab) {
+  document.querySelectorAll('.qa-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['task','expense','note','event','link','countdown'].forEach(t => document.getElementById(`qa-${t}-form`).style.display = t === tab ? '' : 'none');
+}
+
+function qaAddTask() {
+  const title = document.getElementById('qa-task-input').value.trim();
+  if (!title) return;
+  data.tasks.unshift({ id: nid(), title, priority: document.getElementById('qa-task-priority').value, due: document.getElementById('qa-task-due').value, done: false });
+  save(); closeQuickAdd(); renderDashboard(); if (currentView==='tasks') renderTasks();
+  showToast('Task added!'); document.getElementById('qa-task-input').value = '';
+}
+
+function qaAddExpense() {
+  const desc = document.getElementById('qa-exp-desc').value.trim();
+  const amount = parseFloat(document.getElementById('qa-exp-amount').value);
+  if (!desc || isNaN(amount)) return;
+  const cat = document.getElementById('qa-exp-cat').value;
+  const isIncome = cat === 'Income';
+  data.expenses.push({ id: nid(), desc, cat, amount: isIncome ? Math.abs(amount) : -Math.abs(amount), date: new Date().toISOString().split('T')[0] });
+  save(); closeQuickAdd(); renderDashboard(); if (currentView==='expenses') renderExpenses();
+  showToast('Expense added!'); document.getElementById('qa-exp-desc').value = ''; document.getElementById('qa-exp-amount').value = '';
+}
+
+function qaAddNote() {
+  const title = document.getElementById('qa-note-title').value.trim();
+  const body = document.getElementById('qa-note-body').value;
+  const folderId = document.getElementById('qa-note-folder').value;
+  const n = { id: nid(), title: title || 'Quick note', body, updated: Date.now() };
+  if (folderId) {
+    const folder = data.folders.find(f => f.id == folderId);
+    if (folder) folder.notes.unshift(n);
+  } else {
+    data.notes.unshift(n);
+  }
+  save(); closeQuickAdd();
+  if (currentView === 'notes' && !folderId) { currentNoteId = n.id; renderNotes(); }
+  if (currentView === 'folder' && folderId && currentFolder && currentFolder.id == folderId) { currentFolderNoteId = n.id; renderFolderNotes(); }
+  showToast('Note saved!');
+}
+
+function qaAddLink() {
+  let url = document.getElementById('qa-link-url').value.trim();
+  if (!url) return;
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  const title = document.getElementById('qa-link-title').value.trim() || getDomain(url);
+  const category = document.getElementById('qa-link-cat').value.trim();
+  (data.links = data.links||[]).unshift({ id: nid(), title, url, category, date: new Date().toISOString().split('T')[0] });
+  save(); closeQuickAdd(); if (currentView==='links') renderLinks();
+  showToast('Link saved!');
+  document.getElementById('qa-link-url').value = '';
+  document.getElementById('qa-link-title').value = '';
+  document.getElementById('qa-link-cat').value = '';
+}
+
+function qaAddCountdown() {
+  const name = document.getElementById('qa-cd-name').value.trim();
+  const date = document.getElementById('qa-cd-date').value;
+  const category = document.getElementById('qa-cd-cat').value.trim();
+  if (!name || !date) return;
+  (data.countdowns = data.countdowns||[]).push({ id: nid(), name, date, category, created: new Date().toISOString().split('T')[0] });
+  save(); closeQuickAdd(); if (currentView==='countdowns') renderCountdowns();
+  showToast('Countdown added!');
+  document.getElementById('qa-cd-name').value = '';
+  document.getElementById('qa-cd-date').value = '';
+  document.getElementById('qa-cd-cat').value = '';
+}
+
+function qaAddEvent() {
+  const title = document.getElementById('qa-ev-title').value.trim();
+  const date = document.getElementById('qa-ev-date').value;
+  if (!title || !date) return;
+  data.events.push({ id: nid(), title, date, type: 'reminder', recur: document.getElementById('qa-ev-recur').value });
+  save(); closeQuickAdd(); renderDashboard(); if (currentView==='calendar') renderCalendarFull();
+  showToast('Event added!');
+}
+
+// ═══════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function updateBadges() {
+  document.getElementById('expense-badge').textContent = data.expenses.length;
+  document.getElementById('task-badge').textContent = data.tasks.filter(t => !t.done).length;
+  document.getElementById('link-badge').textContent = (data.links||[]).length;
+}
+
+// keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeModal('pay-modal'); closeModal('event-modal'); closeModal('savings-modal');
+    closeSearch(); closeQuickAdd(); closeSidebar();
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+});
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+function setupDrop(editorId, getNoteId, getNote, containerId) {
+  const el = document.getElementById(editorId);
+  el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drag-over'); });
+  el.addEventListener('dragleave', e => { if (!el.contains(e.relatedTarget)) el.classList.remove('drag-over'); });
+  el.addEventListener('drop', e => {
+    e.preventDefault(); el.classList.remove('drag-over');
+    const note = getNote();
+    if (!note) { showToast('Select a note first'); return; }
+    handleFileDrop(e.dataTransfer.files, note, containerId);
+  });
+}
+
+setupDrop('main-note-editor',
+  () => currentNoteId,
+  () => data.notes.find(n => n.id === currentNoteId),
+  'note-attachments'
+);
+setupDrop('folder-note-editor',
+  () => currentFolderNoteId,
+  () => currentFolder?.notes.find(n => n.id === currentFolderNoteId),
+  'folder-note-attachments'
+);
+
+load();
+if (!data.links) data.links = [];
+if (!data.savings) data.savings = [];
+if (!data.countdowns) data.countdowns = [];
+updateTopbar('dashboard');
+renderFolders();
+renderDashboard();
+
+// Set today's date in calendar event form
+const todayStr = new Date().toISOString().split('T')[0];
+document.getElementById('ev-date').value = todayStr;
+document.getElementById('qa-ev-date').value = todayStr;
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
 </body>
 </html>
