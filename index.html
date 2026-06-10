@@ -1299,7 +1299,16 @@ function navigate(view, folderId) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
 
   if (folderId) {
-    currentFolder = data.folders.find(f => f.id == folderId);
+    const newFolder = data.folders.find(f => f.id == folderId);
+    if (currentFolder !== newFolder) {
+      saveFolderNote();
+      currentFolderNoteId = null;
+      document.getElementById('folder-note-title').value = '';
+      document.getElementById('folder-note-body').value = '';
+      document.getElementById('folder-note-attachments').innerHTML = '';
+      document.getElementById('folder-note-status').textContent = '';
+    }
+    currentFolder = newFolder;
     document.getElementById('view-folder').classList.add('active');
     document.getElementById('folder-view-title').textContent = currentFolder.name;
     document.getElementById('page-title').textContent = currentFolder.name;
@@ -2114,6 +2123,10 @@ function newFolderNote() {
   currentFolder.notes.unshift(n);
   currentFolderNoteId = n.id;
   save(); renderFolderNotes();
+  document.getElementById('folder-note-title').value = '';
+  document.getElementById('folder-note-body').value = '';
+  document.getElementById('folder-note-attachments').innerHTML = '';
+  document.getElementById('folder-note-status').textContent = '';
   document.getElementById('folder-note-title').focus();
 }
 
