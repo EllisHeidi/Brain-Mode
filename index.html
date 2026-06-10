@@ -1036,12 +1036,13 @@ select.form-input option{background:var(--card-bg)}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               Drop files to attach
             </div>
-            <input class="note-editor-title" id="note-title" placeholder="Note title…" oninput="saveCurrentNote()">
-            <textarea class="note-editor-body" id="note-body" placeholder="Start writing…" oninput="saveCurrentNote()"></textarea>
+            <input class="note-editor-title" id="note-title" placeholder="Note title…" oninput="noteMarkDirty()">
+            <textarea class="note-editor-body" id="note-body" placeholder="Start writing…" oninput="noteMarkDirty()"></textarea>
             <div class="attachments-area" id="note-attachments"></div>
             <div class="note-toolbar">
-              <span style="font-size:11px;color:var(--text-muted);flex:1" id="note-saved-status">Start typing to save</span>
+              <span style="font-size:11px;color:var(--text-muted);flex:1" id="note-saved-status"></span>
               <button class="btn-cancel" onclick="deleteCurrentNote()">Delete note</button>
+              <button class="btn-primary" id="note-save-btn" onclick="saveCurrentNote(true)" style="padding:6px 16px;font-size:13px">Save</button>
             </div>
           </div>
         </div>
@@ -1117,12 +1118,13 @@ select.form-input option{background:var(--card-bg)}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               Drop files to attach
             </div>
-            <input class="note-editor-title" id="folder-note-title" placeholder="Note title…" oninput="saveFolderNote()">
-            <textarea class="note-editor-body" id="folder-note-body" placeholder="Start writing…" oninput="saveFolderNote()"></textarea>
+            <input class="note-editor-title" id="folder-note-title" placeholder="Note title…" oninput="folderNoteMarkDirty()">
+            <textarea class="note-editor-body" id="folder-note-body" placeholder="Start writing…" oninput="folderNoteMarkDirty()"></textarea>
             <div class="attachments-area" id="folder-note-attachments"></div>
             <div class="note-toolbar">
-              <span style="font-size:11px;color:var(--text-muted);flex:1" id="folder-note-status">Start typing to save</span>
+              <span style="font-size:11px;color:var(--text-muted);flex:1" id="folder-note-status"></span>
               <button class="btn-cancel" onclick="deleteFolderNote()">Delete note</button>
+              <button class="btn-primary" id="folder-save-btn" onclick="saveFolderNote(true)" style="padding:6px 16px;font-size:13px">Save</button>
             </div>
           </div>
         </div>
@@ -1963,6 +1965,7 @@ function renderNotes() {
 }
 
 function selectNote(id) {
+  saveCurrentNote();
   currentNoteId = id;
   const n = data.notes.find(n => n.id === id);
   document.getElementById('note-title').value = n.title;
@@ -1979,16 +1982,28 @@ function newNote() {
   document.getElementById('note-title').focus();
 }
 
-function saveCurrentNote() {
+function noteMarkDirty() {
+  document.getElementById('note-saved-status').textContent = 'Unsaved changes';
+  document.getElementById('note-saved-status').style.color = 'var(--amber)';
+}
+
+function saveCurrentNote(fromBtn) {
   if (!currentNoteId) return;
   const n = data.notes.find(n => n.id === currentNoteId);
   if (!n) return;
   n.title = document.getElementById('note-title').value;
   n.body = document.getElementById('note-body').value;
   n.updated = Date.now();
-  document.getElementById('note-saved-status').textContent = 'Saved ✓';
-  setTimeout(() => document.getElementById('note-saved-status').textContent = 'Auto-saved', 1500);
   save();
+  const status = document.getElementById('note-saved-status');
+  status.textContent = 'Saved ✓';
+  status.style.color = 'var(--green)';
+  if (fromBtn) {
+    const btn = document.getElementById('note-save-btn');
+    btn.textContent = 'Saved ✓';
+    btn.style.background = 'var(--green)';
+    setTimeout(() => { btn.textContent = 'Save'; btn.style.background = ''; status.textContent = ''; }, 1800);
+  }
 }
 
 function deleteCurrentNote() {
@@ -2067,6 +2082,7 @@ function renderFolderNotes() {
 }
 
 function selectFolderNote(id) {
+  saveFolderNote();
   currentFolderNoteId = id;
   const n = currentFolder.notes.find(n => n.id === id);
   document.getElementById('folder-note-title').value = n.title;
@@ -2084,15 +2100,28 @@ function newFolderNote() {
   document.getElementById('folder-note-title').focus();
 }
 
-function saveFolderNote() {
+function folderNoteMarkDirty() {
+  document.getElementById('folder-note-status').textContent = 'Unsaved changes';
+  document.getElementById('folder-note-status').style.color = 'var(--amber)';
+}
+
+function saveFolderNote(fromBtn) {
   if (!currentFolderNoteId || !currentFolder) return;
   const n = currentFolder.notes.find(n => n.id === currentFolderNoteId);
   if (!n) return;
   n.title = document.getElementById('folder-note-title').value;
   n.body = document.getElementById('folder-note-body').value;
   n.updated = Date.now();
-  document.getElementById('folder-note-status').textContent = 'Saved ✓';
   save();
+  const status = document.getElementById('folder-note-status');
+  status.textContent = 'Saved ✓';
+  status.style.color = 'var(--green)';
+  if (fromBtn) {
+    const btn = document.getElementById('folder-save-btn');
+    btn.textContent = 'Saved ✓';
+    btn.style.background = 'var(--green)';
+    setTimeout(() => { btn.textContent = 'Save'; btn.style.background = ''; status.textContent = ''; }, 1800);
+  }
 }
 
 function deleteFolderNote() {
