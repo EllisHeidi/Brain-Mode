@@ -486,6 +486,9 @@ select.form-input option{background:var(--card-bg)}
 }
 .note-editor-body::placeholder{color:var(--text-muted)}
 .note-toolbar{display:flex;gap:8px;align-items:center;padding-top:10px;border-top:1px solid var(--card-border)}
+.btn-save{padding:7px 18px;border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:background var(--transition)}
+.btn-save:hover{background:var(--accent-light)}
+.btn-save.saved{background:var(--green)}
 
 /* ══════════════════════════════════
    CUSTOM FOLDER VIEW
@@ -1041,8 +1044,8 @@ select.form-input option{background:var(--card-bg)}
             <div class="attachments-area" id="note-attachments"></div>
             <div class="note-toolbar">
               <span style="font-size:11px;color:var(--text-muted);flex:1" id="note-saved-status"></span>
-              <button class="btn-cancel" onclick="deleteCurrentNote()">Delete note</button>
-              <button class="btn-primary" id="note-save-btn" onclick="saveCurrentNote(true)" style="padding:6px 16px;font-size:13px">Save</button>
+              <button type="button" class="btn-cancel" onclick="deleteCurrentNote()">Delete note</button>
+              <button type="button" class="btn-save" id="note-save-btn">Save</button>
             </div>
           </div>
         </div>
@@ -1123,8 +1126,8 @@ select.form-input option{background:var(--card-bg)}
             <div class="attachments-area" id="folder-note-attachments"></div>
             <div class="note-toolbar">
               <span style="font-size:11px;color:var(--text-muted);flex:1" id="folder-note-status"></span>
-              <button class="btn-cancel" onclick="deleteFolderNote()">Delete note</button>
-              <button class="btn-primary" id="folder-save-btn" onclick="saveFolderNote(true)" style="padding:6px 16px;font-size:13px">Save</button>
+              <button type="button" class="btn-cancel" onclick="deleteFolderNote()">Delete note</button>
+              <button type="button" class="btn-save" id="folder-save-btn">Save</button>
             </div>
           </div>
         </div>
@@ -2023,10 +2026,10 @@ function saveCurrentNote(fromBtn) {
   if (fromBtn) {
     const btn = document.getElementById('note-save-btn');
     btn.textContent = 'Saved ✓';
-    btn.style.background = 'var(--green)';
+    btn.classList.add('saved');
     status.textContent = 'Saved ✓';
     status.style.color  = 'var(--green)';
-    setTimeout(() => { btn.textContent = 'Save'; btn.style.background = ''; status.textContent = ''; }, 2000);
+    setTimeout(() => { btn.textContent = 'Save'; btn.classList.remove('saved'); status.textContent = ''; }, 2000);
   } else {
     status.textContent = '';
   }
@@ -2149,8 +2152,8 @@ function saveFolderNote(fromBtn) {
   if (fromBtn) {
     const btn = document.getElementById('folder-save-btn');
     btn.textContent = 'Saved ✓';
-    btn.style.background = 'var(--green)';
-    setTimeout(() => { btn.textContent = 'Save'; btn.style.background = ''; status.textContent = ''; }, 1800);
+    btn.classList.add('saved');
+    setTimeout(() => { btn.textContent = 'Save'; btn.classList.remove('saved'); status.textContent = ''; }, 2000);
   }
 }
 
@@ -2544,6 +2547,10 @@ renderDashboard();
 const todayStr = new Date().toISOString().split('T')[0];
 document.getElementById('ev-date').value = todayStr;
 document.getElementById('qa-ev-date').value = todayStr;
+
+// Save button click handlers (wired via JS to avoid display:flex onclick issues)
+document.getElementById('note-save-btn').addEventListener('click', () => saveCurrentNote(true));
+document.getElementById('folder-save-btn').addEventListener('click', () => saveFolderNote(true));
 
 // Ctrl+S / Cmd+S saves the current note
 document.addEventListener('keydown', e => {
